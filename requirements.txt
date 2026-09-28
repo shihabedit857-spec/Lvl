@@ -1,0 +1,9 @@
+httpx
+flask
+flask-sqlalchemy
+flask-bcrypt
+PyJWT
+google-play-scraper
+pycryptodome
+protobuf-decoder
+protobuf
