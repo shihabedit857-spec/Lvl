@@ -181,13 +181,20 @@ async def main():
     print("   TEAM 84FF — Web-Managed FreeFire Bot")
     print("=" * 62)
 
+    # ═══ Register all callbacks ═══
     bot_state.refresh_callbacks["on_account_added"] = on_account_added
     bot_state.refresh_callbacks["on_refresh_account"] = on_refresh_account
     bot_state.refresh_callbacks["on_restart_account"] = on_restart_account
     bot_state.refresh_callbacks["on_account_deleted"] = on_account_deleted
     bot_state.refresh_callbacks["on_account_stopped"] = on_account_stopped
 
-    # ═══ Railway / Local PORT auto-detect ═══
+    # ═══ Detect environment ═══
+    IS_RAILWAY = bool(os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_PROJECT_ID"))
+
+    # ── PORT: Railway auto-assigns, local uses 3000 ──
+    PORT = int(os.environ.get("PORT", 3000))
+
+    # ── Get local IP (for local use only) ──
     def _get_local_ip():
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -199,30 +206,57 @@ async def main():
         except Exception:
             return "127.0.0.1"
 
-    PORT = int(os.environ.get("PORT", 3000))
     local_ip = _get_local_ip()
 
-    await start_web_dashboard("0.0.0.0", PORT)
+    # ═══ Start dashboard — bind 0.0.0.0 for BOTH local & Railway ═══
+    print("[*] Binding to 0.0.0.0:{}".format(PORT))
+    try:
+        await start_web_dashboard("0.0.0.0", PORT)
+    except OSError as e:
+        print("[-] Failed to bind port {}: {}".format(PORT, e))
+        # Try fallback ports
+        for fallback in (8080, 8000, 5000):
+            try:
+                print("[!] Trying fallback port {}".format(fallback))
+                PORT = fallback
+                await start_web_dashboard("0.0.0.0", PORT)
+                break
+            except OSError:
+                continue
+        else:
+            print("[-] Could not bind any port. Exiting.")
+            return
 
-    railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN") or os.environ.get("RAILWAY_STATIC_URL")
-    if railway_domain:
-        url = railway_domain if railway_domain.startswith("http") else f"https://{railway_domain}"
-        print("\033[92m[+] Dashboard → {}\033[0m".format(url))
-    else:
-        print("\033[92m[+] Dashboard → http://{}:{}\033[0m".format(local_ip, PORT))
-    print("\033[92m[+] Local     → http://127.0.0.1:{}\033[0m".format(PORT))
+    # ═══ Print access URLs ═══
+    railway_domain = (os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+                      or os.environ.get("RAILWAY_STATIC_URL")
+                      or os.environ.get("RAILWAY_SERVICE_NAME"))
+
+    print()
+    if IS_RAILWAY or railway_domain:
+        if railway_domain and not railway_domain.startswith("http"):
+            url = "https://{}".format(railway_domain)
+        elif railway_domain:
+            url = railway_domain
+        else:
+            url = "https://<your-railway-domain>.up.railway.app"
+        print("\033[92m[+] Public  → {}\033[0m".format(url))
+    print("\033[92m[+] Local   → http://{}:{}\033[0m".format(local_ip, PORT))
+    print("\033[92m[+] Self    → http://127.0.0.1:{}\033[0m".format(PORT))
     print("\033[92m[+] Access key: 15985683337\033[0m")
+    print()
 
+    # ═══ Auto-load accounts ═══
     if os.path.exists(ACCOUNTS_FILE):
         try:
             with open(ACCOUNTS_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
-            bot_state.log(f"Auto-loading {len(saved)} account(s)", "info")
+            bot_state.log("Auto-loading {} account(s)".format(len(saved)), "info")
             for acc in saved:
                 asyncio.create_task(on_account_added(acc))
                 await asyncio.sleep(0.3)
         except Exception as e:
-            bot_state.log(f"accounts.json load error: {e}", "error")
+            bot_state.log("accounts.json load error: {}".format(e), "error")
 
     print("\n[i] Press Ctrl+C to stop.\n")
     try:
