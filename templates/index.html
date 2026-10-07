@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>TEAM 84FF — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<style>
+:root{--page:#050506;--card:#121215;--card-2:#15151a;--box:#0c0c0f;--box-2:#0e0e11;--box-3:#16161a;--border:#1e1e22;--border-2:#26262b;--border-3:#333338;--text:#f5f5f7;--text-2:#a1a1aa;--text-3:#7a7a82;--text-4:#5c5c64;--text-5:#3a3a40;--white:#f5f5f7;--white-dim:rgba(245,245,247,.08);--white-border:rgba(245,245,247,.15);--red:#ef4444;--red-dim:rgba(239,68,68,.10);--red-border:rgba(239,68,68,.35);--r:20px;--r-md:16px;--r-sm:12px}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,-apple-system,system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--page);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',monospace;font-feature-settings:"tnum"}
+
+/* ═══════════════════ GLOW SYSTEM ═══════════════════ */
+@keyframes glowPulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes glowDot{0%,100%{box-shadow:0 0 12px rgba(245,245,247,.6),0 0 24px rgba(245,245,247,.35);transform:scale(1)}50%{box-shadow:0 0 20px rgba(245,245,247,.9),0 0 40px rgba(245,245,247,.55);transform:scale(1.15)}}
+@keyframes glowText{0%,100%{text-shadow:0 0 12px rgba(245,245,247,.35),0 0 24px rgba(245,245,247,.15)}50%{text-shadow:0 0 20px rgba(245,245,247,.6),0 0 40px rgba(245,245,247,.3)}}
+
+/* Text glow */
+.brand-name{text-shadow:0 0 14px rgba(245,245,247,.35),0 0 28px rgba(245,245,247,.15)}
+.login-title{text-shadow:0 0 25px rgba(245,245,247,.45),0 0 50px rgba(245,245,247,.2);animation:glowText 3.5s ease-in-out infinite}
+.stat-value{text-shadow:0 0 14px rgba(245,245,247,.3),0 0 28px rgba(245,245,247,.12)}
+.acc-nick{text-shadow:0 0 10px rgba(245,245,247,.22)}
+.metric-box strong{text-shadow:0 0 12px rgba(245,245,247,.28)}
+.metric-box.gain strong{text-shadow:0 0 16px rgba(245,245,247,.5),0 0 32px rgba(245,245,247,.25)}
+.uptime-box strong{text-shadow:0 0 10px rgba(245,245,247,.25)}
+.section-title{text-shadow:0 0 8px rgba(245,245,247,.15)}
+.brand-sub span:last-child{text-shadow:0 0 8px rgba(245,245,247,.15)}
+.info-value{text-shadow:0 0 8px rgba(245,245,247,.12)}
+
+/* Live dots with glow */
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--white);animation:glowDot 1.8s ease-in-out infinite}
+.acc-dot{width:9px;height:9px;border-radius:50%;background:var(--white);animation:glowDot 1.8s ease-in-out infinite;flex-shrink:0}
+.acc-dot.off{background:var(--text-5);box-shadow:none;animation:none}
+.acc-dot.warn{background:var(--text-3);box-shadow:0 0 8px rgba(245,245,247,.15);animation:none}
+
+/* Card glow */
+.stat{position:relative}
+.stat:hover{border-color:var(--border-2);box-shadow:0 0 30px rgba(245,245,247,.06),inset 0 0 30px rgba(245,245,247,.015)}
+.acc-card{position:relative}
+.acc-card:hover{border-color:var(--border-2);box-shadow:0 0 40px rgba(245,245,247,.05),inset 0 0 40px rgba(245,245,247,.015)}
+.acc-card.completed{border-color:rgba(245,245,247,.18);box-shadow:0 0 30px rgba(245,245,247,.06)}
+.acc-card.stopped{border-color:var(--border-2)}
+
+/* Button glow */
+.login-btn{box-shadow:0 0 20px rgba(245,245,247,.2)}
+.login-btn:hover{background:#fff;box-shadow:0 0 30px rgba(245,245,247,.5),0 0 60px rgba(245,245,247,.25)}
+.btn-add{box-shadow:0 0 12px rgba(245,245,247,.15)}
+.btn-add:hover{background:#fff;transform:translateY(-1px);box-shadow:0 0 25px rgba(245,245,247,.45),0 0 50px rgba(245,245,247,.2)}
+.btn-icon:hover{color:var(--text);border-color:var(--border-3);background:var(--card-2);box-shadow:0 0 18px rgba(245,245,247,.12)}
+.btn-icon-sm:hover{color:var(--red);border-color:rgba(239,68,68,.3);box-shadow:0 0 14px rgba(239,68,68,.2)}
+.btn-act{position:relative}
+.btn-act:hover{border-color:var(--border-3);background:var(--card-2);box-shadow:0 0 18px rgba(245,245,247,.1)}
+.btn-act.white{box-shadow:0 0 12px rgba(245,245,247,.18)}
+.btn-act.white:hover{background:#fff;transform:translateY(-1px);box-shadow:0 0 22px rgba(245,245,247,.5),0 0 44px rgba(245,245,247,.22)}
+.btn-act.stop{box-shadow:0 0 10px rgba(239,68,68,.15)}
+.btn-act.stop:hover{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5);color:#fff;box-shadow:0 0 22px rgba(239,68,68,.4),0 0 44px rgba(239,68,68,.2)}
+.btn-del{box-shadow:0 0 10px rgba(239,68,68,.15)}
+.btn-del:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.55);color:#fff;box-shadow:0 0 22px rgba(239,68,68,.45),0 0 44px rgba(239,68,68,.22)}
+
+/* Input focus glow */
+.key-input:focus{border-color:var(--border-3);box-shadow:0 0 0 3px rgba(255,255,255,.04),0 0 25px rgba(245,245,247,.15)}
+.search input:focus{border-color:var(--border-3);box-shadow:0 0 22px rgba(245,245,247,.1)}
+.field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--border-3);box-shadow:0 0 0 3px rgba(255,255,255,.03),0 0 22px rgba(245,245,247,.12)}
+
+/* Status chip glow */
+.status-online,.status-match,.status-search,.status-complete{
+    color:var(--white);background:var(--white-dim);border-color:var(--white-border);
+    box-shadow:0 0 18px rgba(245,245,247,.18),inset 0 0 12px rgba(245,245,247,.06)
+}
+.status-match{box-shadow:0 0 26px rgba(245,245,247,.24),inset 0 0 14px rgba(245,245,247,.08)}
+.status-search{box-shadow:0 0 26px rgba(245,245,247,.22),inset 0 0 14px rgba(245,245,247,.08)}
+.status-error{box-shadow:0 0 20px rgba(239,68,68,.28),inset 0 0 12px rgba(239,68,68,.1)}
+
+/* Progress bar glow */
+.progress{height:5px;background:var(--box-2);border-radius:100px;overflow:hidden;margin-bottom:14px}
+.progress-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#71717a,#f5f5f7);box-shadow:0 0 14px rgba(245,245,247,.5),0 0 28px rgba(245,245,247,.25);transition:width .8s cubic-bezier(.2,.9,.2,1)}
+
+/* Uptime box glow when live */
+.uptime-box.live{border-color:rgba(245,245,247,.15);box-shadow:0 0 18px rgba(245,245,247,.06),inset 0 0 14px rgba(245,245,247,.02)}
+.uptime-box.live strong::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--white);display:inline-block;flex-shrink:0;animation:glowDot 1.6s ease-in-out infinite}
+
+/* Modal glow */
+.modal{box-shadow:0 0 60px rgba(0,0,0,.6),0 0 100px rgba(245,245,247,.03)}
+.toast{box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 30px rgba(245,245,247,.04)}
+.toast.success{border-color:var(--white-border);box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 24px rgba(245,245,247,.2)}
+.toast.error{border-color:var(--red-border);box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 24px rgba(239,68,68,.2)}
+
+/* Log line glow for success/error */
+.log-msg.success{color:#fff;text-shadow:0 0 8px rgba(245,245,247,.35)}
+.log-msg.error{color:var(--red);text-shadow:0 0 8px rgba(239,68,68,.4)}
+
+/* Empty state icon glow */
+.empty > i{font-size:34px;color:var(--text-5);margin-bottom:14px;display:block;width:auto;height:auto;line-height:1;text-shadow:0 0 20px rgba(245,245,247,.1)}
+
+/* ═══════════════════ END GLOW ═══════════════════ */
+
+#login-screen{position:fixed;inset:0;z-index:9999;background:var(--page);display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:44px 28px 32px;box-shadow:0 0 60px rgba(245,245,247,.04),inset 0 0 60px rgba(245,245,247,.015)}
+.login-logo{width:70px;height:70px;border-radius:20px;background:#08080a;border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--text);margin:0 auto 28px;box-shadow:0 0 30px rgba(245,245,247,.15),inset 0 0 30px rgba(245,245,247,.03);text-shadow:0 0 20px rgba(245,245,247,.5)}
+.login-sub{text-align:center;font-size:11px;color:var(--text-3);letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:36px;text-shadow:0 0 10px rgba(245,245,247,.1)}
+.field-wrap{position:relative;margin-bottom:14px}
+.field-wrap i{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-4);font-size:13px}
+.key-input{width:100%;padding:17px 46px 17px 46px;background:#08080a;border:1px solid var(--border-2);border-radius:14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;text-transform:uppercase;outline:none;transition:.2s}
+.key-input::placeholder{color:var(--text-4);letter-spacing:2px;font-weight:600}
+.key-eye{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--text-4);cursor:pointer;padding:6px;font-size:14px}
+.key-eye:hover{color:var(--text-2)}
+.login-btn{width:100%;padding:17px;margin-top:8px;border:0;border-radius:14px;background:#f5f5f7;color:#050506;font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:.25s}
+.login-btn:active{transform:scale(.98)}
+.login-err{min-height:16px;text-align:center;margin-top:8px;font-size:11px;color:var(--red);font-weight:600;text-shadow:0 0 10px rgba(239,68,68,.4)}
+#app{display:none}
+.shell{max-width:1400px;margin:0 auto;padding:28px 20px 100px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:32px;padding-bottom:22px;border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{width:42px;height:42px;border-radius:12px;background:#08080a;border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text);flex-shrink:0;box-shadow:0 0 20px rgba(245,245,247,.12),inset 0 0 20px rgba(245,245,247,.02);text-shadow:0 0 16px rgba(245,245,247,.5)}
+.brand-sub{font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:6px;margin-top:2px}
+.top-actions{display:flex;gap:8px}
+.btn-icon{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.2s}
+.btn-add{padding:0 18px;height:42px;border:0;border-radius:12px;background:#f5f5f7;color:#050506;font-size:12px;font-weight:800;letter-spacing:.8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.2s;text-transform:uppercase;font-family:Inter,sans-serif}
+.btn-add i,.btn-add i::before{font-size:12px !important;line-height:1 !important;margin:0 !important;display:inline-block}
+.section{margin-bottom:28px}
+.section-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.section-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text-5);letter-spacing:1px;flex-shrink:0}
+.section-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-3);flex-shrink:0}
+.section-line{flex:1;height:1px;background:var(--border)}
+.section-count{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--text);padding:3px 10px;background:var(--box-3);border:1px solid var(--border-2);border-radius:100px;flex-shrink:0;box-shadow:0 0 12px rgba(245,245,247,.08)}
+.btn-icon-sm{width:30px;height:30px;border-radius:9px;border:1px solid var(--border);background:var(--card);color:var(--text-4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:.2s}
+.btn-icon-sm i,.btn-icon-sm i::before{font-size:11px !important;line-height:1 !important;margin:0 !important}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:16px;transition:.25s}
+.stat-label{display:flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-4);margin-bottom:10px}
+.stat-label i{color:var(--text-5);font-size:10px}
+.stat-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:-.5px;color:#fff;line-height:1.1;margin-bottom:4px}
+.stat-foot{font-size:10px;color:var(--text-4);letter-spacing:.3px}
+.main-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:22px;align-items:start}
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search{flex:1;min-width:180px;position:relative}
+.search i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-4);font-size:12px}
+.search input{width:100%;padding:12px 14px 12px 40px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;outline:none;transition:.2s}
+.search input::placeholder{color:var(--text-5)}
+.filters{display:flex;gap:2px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.filter{border:0;background:transparent;color:var(--text-4);padding:8px 13px;border-radius:9px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:.2s;white-space:nowrap}
+.filter:hover{color:var(--text-2)}
+.filter.active{background:var(--box-3);color:var(--text);box-shadow:0 0 14px rgba(245,245,247,.08)}
+.accounts-wrap{display:flex;flex-direction:column;gap:14px}
+.acc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;transition:.25s}
+.acc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.acc-id{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.acc-nick{font-size:17px;font-weight:800;letter-spacing:-.4px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.acc-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text-3)}
+.acc-badge{padding:5px 12px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-2);background:var(--box-2);border:1px solid var(--border-2);border-radius:100px;flex-shrink:0}
+.acc-target-badge{padding:5px 12px;font-size:10px;font-weight:800;letter-spacing:1.2px;color:var(--text-2);background:var(--box-3);border:1px solid var(--border-2);border-radius:100px;flex-shrink:0;white-space:nowrap}
+.acc-uid-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.uid-chip{padding:9px 14px;background:var(--box-2);border:1px solid var(--border);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3);letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status-chip{padding:9px 14px;border-radius:10px;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;border:1px solid;white-space:nowrap;background:var(--box-2);border-color:var(--border-2);color:var(--text-2)}
+.status-stopped{color:var(--text-2);background:var(--box-3);border-color:var(--border-2)}
+.status-offline{color:var(--text-3);background:var(--box-2);border-color:var(--border-2)}
+.acc-info{display:flex;flex-direction:column;gap:10px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:16px}
+.info-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
+.info-label{display:flex;align-items:center;gap:10px;color:var(--text-4);font-weight:500}
+.info-label i{font-size:10px;width:12px;color:var(--text-5)}
+.info-value{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12px}
+.uptime-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.uptime-box{padding:12px 14px;background:var(--box-2);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;gap:4px;transition:.2s}
+.uptime-box span{font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-4)}
+.uptime-box strong{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--text);letter-spacing:.5px;line-height:1.1;display:flex;align-items:center;gap:6px}
+.uptime-box.paused strong{color:var(--text-3)}
+.uptime-box.paused strong::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--text-3);display:inline-block;flex-shrink:0}
+.uptime-box.stopped strong{color:var(--text-3)}
+.uptime-box.stopped strong::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--text-5);display:inline-block;flex-shrink:0}
+.metric-stack{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.metric-box{padding:14px 16px;background:var(--box-2);border:1px solid var(--border);border-radius:14px;transition:.2s}
+.metric-box span{display:block;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-4);margin-bottom:6px}
+.metric-box strong{display:block;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:-.5px;color:#fff;line-height:1}
+.metric-box.gain strong{color:#fff}
+.acc-stats-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--text-4);font-family:'JetBrains Mono',monospace;letter-spacing:.3px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.acc-stats-row span{white-space:nowrap}
+.acc-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn-act{flex:1;min-width:80px;padding:13px 16px;border-radius:12px;border:1px solid var(--border-2);background:var(--box-3);color:var(--text);font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.22s;font-family:Inter,sans-serif}
+.btn-act i,.btn-act i::before{font-size:11px !important;line-height:1 !important;margin:0 !important;display:inline-block;flex-shrink:0}
+.btn-del{width:46px;height:46px;flex-shrink:0;border-radius:12px;border:1px solid var(--red-border);background:var(--red-dim);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.22s}
+.btn-del i,.btn-del i::before{font-size:14px !important;line-height:1 !important;margin:0 !important}
+.console-filters{display:flex;gap:2px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow-x:auto}
+.cfilter{flex:1;border:0;background:transparent;color:var(--text-4);padding:8px 12px;border-radius:9px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:.2s;white-space:nowrap}
+.cfilter:hover{color:var(--text-2)}
+.cfilter.active{background:var(--box-3);color:var(--text);box-shadow:0 0 14px rgba(245,245,247,.08)}
+.console-body{background:var(--box-2);border:1px solid var(--border);border-radius:14px;padding:14px;height:680px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.75;box-shadow:inset 0 0 40px rgba(245,245,247,.01)}
+.console-body::-webkit-scrollbar,.accounts-wrap::-webkit-scrollbar,body::-webkit-scrollbar{width:6px}
+.console-body::-webkit-scrollbar-thumb,.accounts-wrap::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb{background:var(--border-3);border-radius:10px}
+.log-line{display:flex;gap:10px;padding:2px 0;word-break:break-word}
+.log-ts{color:var(--text-5);flex-shrink:0}
+.log-msg{color:var(--text-2);flex:1}
+.log-msg.warning{color:var(--text-2)}
+.log-msg.info{color:var(--text-2)}
+.empty{text-align:center;padding:60px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text-4);overflow:hidden}
+.empty p{font-size:13px;margin-bottom:18px;color:var(--text-4)}
+.empty .btn-add{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 22px;height:46px;max-width:100%;border:0;border-radius:12px;background:#f5f5f7;color:#050506;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;white-space:nowrap;line-height:1;font-family:Inter,sans-serif}
+.empty .btn-add i,.empty .btn-add i::before{font-size:14px !important;width:auto !important;height:auto !important;line-height:1 !important;margin:0 !important;padding:0 !important;color:#050506 !important;display:inline-block !important;flex-shrink:0}
+.empty .btn-add:hover{background:#fff;transform:translateY(-1px);box-shadow:0 0 25px rgba(245,245,247,.45)}
+.modal-bg{position:fixed;inset:0;z-index:5000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.75);backdrop-filter:blur(8px)}
+.modal-bg.active{display:flex}
+.modal{width:100%;max-width:420px;background:var(--card);border:1px solid var(--border-2);border-radius:22px;padding:26px;animation:modalIn .25s ease;max-height:90vh;overflow-y:auto}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;width:100%}
+.modal-head h3{font-size:15px;font-weight:800;display:flex;align-items:center;gap:10px;color:#fff;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 12px rgba(245,245,247,.25)}
+.modal-head h3 i{color:var(--text-2);flex-shrink:0;font-size:14px}
+.modal-close{width:34px;height:34px;flex-shrink:0;border-radius:10px;border:1px solid var(--border);background:var(--box-2);color:var(--text-4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.2s;margin-left:auto}
+.modal-close:hover{color:var(--red);border-color:rgba(239,68,68,.3);box-shadow:0 0 14px rgba(239,68,68,.2)}
+.modal-close i,.modal-close i::before{font-size:12px !important;line-height:1 !important;margin:0 !important}
+.field-block{margin-bottom:16px}
+.field-block label{display:block;font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-4);margin-bottom:8px}
+.field-input,.field-select,.field-textarea{width:100%;padding:13px 16px;background:#08080a;border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;outline:none;transition:.2s;font-family:Inter,sans-serif}
+.field-input::placeholder,.field-textarea::placeholder{color:var(--text-5)}
+.field-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7c99' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.field-select option{background:var(--card);color:var(--text)}
+.field-textarea{resize:vertical;min-height:90px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.field-input.mono,.field-textarea.mono{font-family:'JetBrains Mono',monospace}
+.modal-actions{display:flex;gap:8px;margin-top:22px}
+.modal-actions .btn-act{flex:1}
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:12px;min-width:230px;max-width:340px;padding:14px 18px;background:var(--card);border:1px solid var(--border-2);border-radius:14px;color:var(--text);font-size:13px;font-weight:600;animation:toastIn .3s cubic-bezier(.2,.9,.2,1);pointer-events:auto}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast i,.toast i::before{font-size:14px !important;line-height:1 !important;margin:0 !important}
+.toast.success i{color:#fff;text-shadow:0 0 12px rgba(245,245,247,.6)}
+.toast.error i{color:var(--red);text-shadow:0 0 12px rgba(239,68,68,.6)}
+.toast.info i{color:var(--text-2)}
+.mobile-nav{display:none}
+@media(max-width:1200px){.main-grid{grid-template-columns:1fr}.console-body{height:400px}}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){
+.shell{padding:16px 14px 90px}
+.topbar{margin-bottom:20px;padding-bottom:18px}
+.brand-mark{width:38px;height:38px;font-size:16px}
+.brand-name{font-size:14px}
+.btn-add{padding:0 12px}
+.btn-add span{display:none}
+.stats-grid{grid-template-columns:1fr 1fr;gap:8px}
+.stat{padding:14px}
+.stat-value{font-size:18px}
+.stat-label{font-size:8px;letter-spacing:1.4px;margin-bottom:8px}
+.section-head{gap:10px;margin-bottom:14px}
+.section-title{font-size:10px;letter-spacing:2.5px}
+.acc-card{padding:16px}
+.acc-nick{font-size:15px;max-width:130px}
+.metric-box strong{font-size:17px}
+.metric-box{padding:12px 14px}
+.uptime-box strong{font-size:14px}
+.uptime-box{padding:10px 12px}
+.btn-act{padding:12px;font-size:11px;letter-spacing:.3px;min-width:60px}
+.btn-del{width:42px;height:42px}
+.acc-stats-row{font-size:10px;gap:4px}
+.modal{align-items:flex-end;padding:24px 20px 32px;max-width:100%;border-radius:22px 22px 0 0;max-height:90vh;overflow-y:auto}
+.modal-head{margin-bottom:20px}
+.modal-head h3{font-size:16px}
+.toast-wrap{left:14px;right:14px;top:14px}
+.toast{min-width:0;max-width:none}
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;height:64px;z-index:4000;display:flex;align-items:center;justify-content:space-around;padding:6px;background:rgba(5,5,6,.96);border-top:1px solid var(--border);backdrop-filter:blur(20px)}
+.nav-btn{flex:1;border:0;background:none;color:var(--text-4);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.8px;padding:8px 6px;border-radius:10px;cursor:pointer;text-transform:uppercase;transition:.2s;font-family:Inter,sans-serif}
+.nav-btn i,.nav-btn i::before{font-size:16px !important;line-height:1 !important;margin:0 !important}
+.nav-btn.active{color:#fff;background:rgba(255,255,255,.06);box-shadow:0 0 18px rgba(245,245,247,.15)}
+.mobile-tab{display:none}
+.mobile-tab.active{display:block}
+.console-section.mobile-tab.active{display:block}
+.console-body{height:calc(100vh - 400px);min-height:280px}
+}
+@media(max-width:400px){.stats-grid{grid-template-columns:1fr}.filters{width:100%}.filter{flex:1;padding:8px 4px;font-size:9px;letter-spacing:.4px}}
+</style>
+</head>
+<body>
+<section id="login-screen">
+<div class="login-card">
+<div class="login-logo"><i class="fa-solid fa-bolt"></i></div>
+<div class="login-title">TEAM 84FF</div>
+<div class="login-sub">Command Center</div>
+<form onsubmit="login(event)">
+<div class="field-wrap">
+<i class="fa-solid fa-key"></i>
+<input id="login-key" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off">
+<button type="button" class="key-eye" onclick="toggleKey()"><i id="key-eye" class="fa-solid fa-eye"></i></button>
+</div>
+<div class="login-err" id="login-error"></div>
+<button class="login-btn" type="submit">Unlock Access</button>
+</form>
+</div>
+</section>
+<div id="app">
+<div class="toast-wrap" id="toast-wrap"></div>
+<div class="shell">
+<header class="topbar">
+<div class="brand">
+<div class="brand-mark"><i class="fa-solid fa-bolt"></i></div>
+<div>
+<div class="brand-name">TEAM 84FF</div>
+<div class="brand-sub"><span class="live-dot"></span><span>System Online</span></div>
+</div>
+</div>
+<div class="top-actions">
+<button class="btn-icon" onclick="manualRefresh()" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+<button class="btn-add" onclick="openAddModal()"><i class="fa-solid fa-plus"></i><span>Add Account</span></button>
+</div>
+</header>
+<section class="section">
+<div class="section-head"><span class="section-num">01</span><span class="section-title">Overview</span><div class="section-line"></div></div>
+<div class="stats-grid">
+<div class="stat"><div class="stat-label"><i class="fa-solid fa-users"></i>Accounts</div><div class="stat-value" id="stat-accounts">0</div><div class="stat-foot" id="stat-online">0 running</div></div>
+<div class="stat"><div class="stat-label"><i class="fa-solid fa-rocket"></i>Started</div><div class="stat-value" id="stat-started">0</div><div class="stat-foot" id="stat-per-hour">~0 / hour</div></div>
+<div class="stat"><div class="stat-label"><i class="fa-solid fa-gamepad"></i>Completed</div><div class="stat-value" id="stat-completed">0</div><div class="stat-foot" id="stat-active-matches">0 active</div></div>
+<div class="stat"><div class="stat-label"><i class="fa-solid fa-arrow-trend-up"></i>Total Exp</div><div class="stat-value" id="stat-exp">+0</div><div class="stat-foot" id="stat-exp-rate">~0 / hour</div></div>
+<div class="stat"><div class="stat-label"><i class="fa-solid fa-clock"></i>Uptime</div><div class="stat-value" id="stat-uptime">00:00:00</div><div class="stat-foot">Operational</div></div>
+</div>
+</section>
+<div class="main-grid">
+<section class="section mobile-tab active" id="tab-accounts">
+<div class="section-head"><span class="section-num">03</span><span class="section-title">Your Accounts</span><div class="section-line"></div><span class="section-count" id="badge-count">0</span></div>
+<div class="toolbar">
+<div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="account-search" type="text" placeholder="Search nickname or UID..." oninput="filterAccounts()"></div>
+<div class="filters">
+<button class="filter active" onclick="setFilter('all',this)">All</button>
+<button class="filter" onclick="setFilter('running',this)">Running</button>
+<button class="filter" onclick="setFilter('stopped',this)">Stopped</button>
+<button class="filter" onclick="setFilter('complete',this)">Done</button>
+</div>
+</div>
+<div class="accounts-wrap" id="accounts-container">
+<div class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i><p>Loading accounts...</p></div>
+</div>
+</section>
+<section class="section console-section mobile-tab" id="tab-console">
+<div class="section-head"><span class="section-num">02</span><span class="section-title">Live Console</span><div class="section-line"></div><button class="btn-icon-sm" onclick="clearLogs()" title="Clear"><i class="fa-solid fa-trash"></i></button></div>
+<div class="console-filters">
+<button class="cfilter active" onclick="setLogFilter('all',this)">All</button>
+<button class="cfilter" onclick="setLogFilter('match',this)">Match</button>
+<button class="cfilter" onclick="setLogFilter('success',this)">Exp</button>
+<button class="cfilter" onclick="setLogFilter('error',this)">Error</button>
+</div>
+<div class="console-body" id="console-stream"></div>
+</section>
+<section class="section mobile-tab" id="tab-stats">
+<div class="section-head"><span class="section-num">04</span><span class="section-title">Analytics</span><div class="section-line"></div></div>
+<div class="stats-grid" style="grid-template-columns:1fr">
+<div class="stat"><div class="stat-label"><i class="fa-solid fa-arrow-trend-up"></i>Total Exp</div><div class="stat-value" id="m-exp">+0</div><div class="stat-foot" id="m-exp-rate">~0 / hour</div></div>
+<div class="stat"><div class="stat-label"><i class="fa-solid fa-rocket"></i>Matches Started</div><div class="stat-value" id="m-started">0</div><div class="stat-foot" id="m-rate">~0 / hour</div></div>
+</div>
+</section>
+</div>
+</div>
+<nav class="mobile-nav">
+<button class="nav-btn active" onclick="switchTab('accounts',this)"><i class="fa-solid fa-users"></i>Accounts</button>
+<button class="nav-btn" onclick="switchTab('stats',this)"><i class="fa-solid fa-chart-simple"></i>Stats</button>
+<button class="nav-btn" onclick="switchTab('console',this)"><i class="fa-solid fa-terminal"></i>Console</button>
+<button class="nav-btn" onclick="openAddModal()"><i class="fa-solid fa-circle-plus"></i>Add</button>
+</nav>
+</div>
+<div class="modal-bg" id="add-modal">
+<div class="modal">
+<div class="modal-head">
+<h3><i class="fa-solid fa-user-plus"></i>Add Account</h3>
+<button class="modal-close" onclick="closeAddModal()"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<form onsubmit="submitAddAccount(event)">
+<div class="field-block">
+<label>Login Type</label>
+<select class="field-select" id="acc-type" onchange="toggleFormType()">
+<option value="guest">Guest Account (UID + Password)</option>
+<option value="token">Access Token</option>
+</select>
+</div>
+<div id="guest-inputs">
+<div class="field-block"><label>Guest UID</label><input id="acc-uid" class="field-input mono" type="text" placeholder="Enter UID" autocomplete="off"></div>
+<div class="field-block"><label>Guest Password</label><input id="acc-password" class="field-input mono" type="text" placeholder="Enter password" autocomplete="off"></div>
+</div>
+<div id="token-inputs" style="display:none">
+<div class="field-block"><label>Access Token</label><textarea id="acc-token" class="field-textarea" placeholder="Paste access token here..."></textarea></div>
+</div>
+<div class="field-block">
+<label>Play Mode</label>
+<select class="field-select" id="acc-mode">
+<option value="AUTO">Auto (BR → LW at Lvl 3)</option>
+<option value="BR">Battle Royale Only (Safe · No Ban)</option>
+<option value="LW">⚠️ Lone Wolf Only (HIGH RISK · 100% BAN)</option>
+</select>
+</div>
+<div class="field-block">
+<label>Target Level (0 = Unlimited)</label>
+<input id="acc-target" class="field-input mono" type="number" min="0" max="100" value="0" placeholder="e.g. 30">
+</div>
+<div class="modal-actions">
+<button type="button" class="btn-act" onclick="closeAddModal()">Cancel</button>
+<button type="submit" class="btn-act white"><i class="fa-solid fa-rocket"></i>Save & Login</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+const ACCESS_KEY = "15985683337";
+const EXP_TABLE = {1:0,2:48,3:202,4:544,5:1012,6:1844,7:2792,8:3800,9:4870,10:6004,11:7192,12:8448,13:9760,14:11140,15:12566,16:14060,17:15610,18:17224,19:18902,20:20632,21:22424,22:24278,23:26192,24:28166,25:30200,26:32294,27:34448,28:37804,29:41274,30:44870,31:48582,32:53394,33:58566,34:64096,35:69994,36:76460,37:83506,38:91128,39:99322,40:108092,41:120144,42:133266,43:147472,44:162760,45:179126,46:196572,47:215368,48:235516,49:257010,50:279860,51:304056,52:348318,53:394982,54:444044,55:495508,56:549364,57:633756,58:721744,59:813336,60:908522,61:1041438,62:1180352,63:1325266,64:1476184,65:1634300,66:1840946,67:2056594,68:2281242,69:2514880,70:2757530,71:3059506,72:3372284,73:3699456,74:4041030,75:4397002,76:4829104,77:5282204,78:5756304,79:6251408,80:6776502,81:7381324,82:8043154,83:8752982,84:9510808,85:10316338,86:11277190,87:12291748,88:13360304,89:14482858,90:15659418,91:17026708,92:18453950,93:19941280,94:21488570,95:23095858,96:24763138,97:26490428,98:28378704,99:30124996,100:32032884};
+let cachedAccounts = [];
+let cachedLogs = [];
+let activeFilter = "all";
+let activeLogFilter = "all";
+let clientStart = Date.now();
+
+function login(e){
+e.preventDefault();
+const inp = document.getElementById("login-key");
+const err = document.getElementById("login-error");
+if(inp.value.trim() === ACCESS_KEY){
+err.innerText = "";
+document.getElementById("login-screen").style.display = "none";
+document.getElementById("app").style.display = "block";
+fetchStats();
+toast("Welcome to Command Center", "success");
+} else {
+err.innerText = "Invalid access key";
+inp.value = "";
+}
+}
+function toggleKey(){
+const inp = document.getElementById("login-key");
+const eye = document.getElementById("key-eye");
+if(inp.type === "password"){inp.type="text";eye.className="fa-solid fa-eye-slash";}
+else{inp.type="password";eye.className="fa-solid fa-eye";}
+}
+function toast(msg, type="info"){
+const wrap = document.getElementById("toast-wrap");
+const t = document.createElement("div");
+t.className = "toast " + type;
+const icons = {success:"fa-circle-check", error:"fa-triangle-exclamation", info:"fa-circle-info"};
+t.innerHTML = `<i class="fa-solid ${icons[type]||icons.info}"></i><span>${esc(msg)}</span>`;
+wrap.appendChild(t);
+setTimeout(()=>{t.style.opacity="0";t.style.transform="translateX(30px)";t.style.transition=".3s";setTimeout(()=>t.remove(),300);}, 3000);
+}
+function openAddModal(){document.getElementById("add-modal").classList.add("active")}
+function closeAddModal(){document.getElementById("add-modal").classList.remove("active")}
+function toggleFormType(){
+const t = document.getElementById("acc-type").value;
+document.getElementById("guest-inputs").style.display = t === "guest" ? "block" : "none";
+document.getElementById("token-inputs").style.display = t === "token" ? "block" : "none";
+}
+async function submitAddAccount(e){
+e.preventDefault();
+const type = document.getElementById("acc-type").value;
+const target = parseInt(document.getElementById("acc-target").value || "0");
+const mode = document.getElementById("acc-mode").value || "AUTO";
+
+if(mode === "LW"){
+if(!confirm("⚠️ WARNING: Lone Wolf mode has HIGH RISK of account BAN (nearly 100%).\n\nAre you sure you want to continue?")){
+return;
+}
+}
+
+let payload = {target_level: target, mode: mode};
+if(type === "guest"){
+const uid = document.getElementById("acc-uid").value.trim();
+const pass = document.getElementById("acc-password").value.trim();
+if(!uid || !pass){toast("UID & password required","error");return}
+payload.uid = uid; payload.password = pass;
+} else {
+const tok = document.getElementById("acc-token").value.trim();
+if(!tok){toast("Token required","error");return}
+payload.token = tok;
+}
+try{
+const r = await fetch("/api/account/add",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+const d = await r.json();
+if(d.status === "ok"){
+closeAddModal();
+toast("Account added · Mode: " + mode, "success");
+setTimeout(fetchStats, 800);
+} else {
+toast(d.error || "Failed", "error");
+}
+}catch(e){toast("Network error","error")}
+}
+async function deleteAccount(uid, authUid){
+if(!confirm(`Delete ${uid}?`)) return;
+try{
+const r = await fetch("/api/account/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid, auth_uid:authUid||""})});
+const d = await r.json();
+if(d.status === "ok"){toast("Deleted","success");fetchStats()}
+else toast(d.error || "Failed","error");
+}catch(e){toast("Network error","error")}
+}
+async function refreshAcc(uid){
+try{
+toast(`Refreshing ${uid}...`,"info");
+await fetch("/api/account/refresh",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid})});
+setTimeout(fetchStats, 1500);
+}catch(e){toast("Failed","error")}
+}
+async function restartAcc(uid, authUid){
+try{
+toast(`Restarting ${uid}...`,"info");
+const r = await fetch("/api/account/restart",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({uid, auth_uid: authUid || ""})
+});
+const d = await r.json();
+if(d.status === "ok"){toast("Restart triggered","success");setTimeout(fetchStats, 2000);}
+else toast(d.error || "Restart failed","error");
+}catch(e){toast("Failed","error")}
+}
+async function stopAcc(uid, authUid){
+try{
+toast(`Stopping ${uid}...`,"info");
+const r = await fetch("/api/account/stop",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({uid, auth_uid: authUid || ""})
+});
+const d = await r.json();
+if(d.status === "ok"){toast("Stopped","success");setTimeout(fetchStats, 600);}
+else toast(d.error || "Stop failed","error");
+}catch(e){toast("Failed","error")}
+}
+async function startAcc(uid, authUid){
+try{
+toast(`Starting ${uid}...`,"info");
+const r = await fetch("/api/account/start",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({uid, auth_uid: authUid || ""})
+});
+const d = await r.json();
+if(d.status === "ok"){toast("Started","success");setTimeout(fetchStats,1500)}
+else toast(d.error || "Start failed","error");
+}catch(e){toast("Failed","error")}
+}
+async function togglePause(uid){
+try{
+const r = await fetch("/api/account/pause",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid})});
+const d = await r.json();
+if(d.status === "ok"){toast(d.is_paused ? "Paused" : "Resumed", d.is_paused ? "info" : "success");fetchStats()}
+}catch(e){toast("Failed","error")}
+}
+function setFilter(f, btn){
+activeFilter = f;
+document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));
+if(btn) btn.classList.add("active");
+filterAccounts();
+}
+function filterAccounts(){
+const q = (document.getElementById("account-search").value || "").toLowerCase().trim();
+document.querySelectorAll(".acc-card").forEach(card=>{
+const uid = (card.dataset.uid || "").toLowerCase();
+const nick = (card.dataset.nick || "").toLowerCase();
+const st = (card.dataset.status || "").toLowerCase();
+const matchSearch = !q || uid.includes(q) || nick.includes(q);
+let matchFilter = true;
+if(activeFilter === "running") matchFilter = ["online","match","search","connecting"].includes(st);
+else if(activeFilter === "stopped") matchFilter = ["stopped","error","offline"].includes(st);
+else if(activeFilter === "complete") matchFilter = st === "complete";
+card.style.display = (matchSearch && matchFilter) ? "block" : "none";
+});
+}
+function renderAccounts(accounts){
+const container = document.getElementById("accounts-container");
+document.getElementById("badge-count").innerText = accounts.length;
+if(accounts.length === 0){
+container.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i><p>No accounts yet</p><button class="btn-add" onclick="openAddModal()"><i class="fa-solid fa-plus"></i>Add First Account</button></div>`;
+return;
+}
+if(container.querySelector(".empty")) container.innerHTML = "";
+const uids = new Set(accounts.map(a=>String(a.uid)));
+container.querySelectorAll(".acc-card").forEach(c=>{if(!uids.has(c.dataset.uid)) c.remove();});
+
+accounts.forEach(acc => {
+const uid = String(acc.uid);
+const level = Math.max(1, parseInt(acc.level) || 1);
+const targetLvl = parseInt(acc.target_level || 0);
+const nextLvl = Math.min(100, level + 1);
+const baseExp = EXP_TABLE[level] ?? 0;
+const targetExp = EXP_TABLE[nextLvl] ?? baseExp + 50000;
+const needed = Math.max(1, targetExp - baseExp);
+const curExp = Number(acc.current_exp || 0);
+const earned = Math.max(0, curExp - baseExp);
+const pct = level >= 100 ? 100 : Math.min(100, Math.max(0, earned / needed * 100));
+const status = acc.status || "OFFLINE";
+const statusU = status.toUpperCase();
+const isComplete = statusU === "COMPLETE" || acc.is_target_reached;
+const isStopped = statusU === "STOPPED";
+const isPaused = Boolean(acc.is_paused) || statusU === "PAUSED";
+const isRunning = !isComplete && !isStopped && !isPaused && (
+statusU.includes("ONLINE") || statusU.includes("IN_MATCH") ||
+statusU.includes("SEARCHING") || statusU.includes("CONNECTING"));
+let cls = "offline";
+if(isComplete) cls = "complete";
+else if(isStopped || isPaused) cls = "stopped";
+else if(statusU.includes("IN_MATCH")) cls = "match";
+else if(statusU.includes("SEARCHING")) cls = "search";
+else if(statusU.includes("ONLINE")) cls = "online";
+else if(statusU.includes("ERROR")) cls = "error";
+const stText = isComplete ? "COMPLETE" : isStopped ? "STOPPED" : isPaused ? "PAUSED" : status;
+let dotCls = "";
+if(!isRunning || isComplete) dotCls = isComplete ? "" : " off";
+if(isStopped || isPaused) dotCls = " warn";
+const upSecs = Math.max(0, Math.floor(acc.uptime_seconds || 0));
+let uptimeCls = "live";
+if(isStopped || isComplete) uptimeCls = "stopped";
+else if(isPaused) uptimeCls = "paused";
+
+const authUidAttr = escAttr(acc.auth_uid || '');
+
+let actions = "";
+if(isComplete){
+actions = `
+<button class="btn-act" onclick="restartAcc('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-rotate-right"></i>Restart</button>
+<button class="btn-del" onclick="deleteAccount('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-trash"></i></button>`;
+} else if(isRunning){
+actions = `
+<button class="btn-act stop" onclick="stopAcc('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-stop"></i>Stop</button>
+<button class="btn-act" onclick="restartAcc('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-rotate-right"></i>Restart</button>
+<button class="btn-act white" onclick="refreshAcc('${escAttr(uid)}')"><i class="fa-solid fa-arrows-rotate"></i>Refresh</button>
+<button class="btn-del" onclick="deleteAccount('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-trash"></i></button>`;
+} else {
+actions = `
+<button class="btn-act white" onclick="startAcc('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-play"></i>Start</button>
+<button class="btn-act" onclick="restartAcc('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-rotate-right"></i>Restart</button>
+<button class="btn-act" onclick="refreshAcc('${escAttr(uid)}')"><i class="fa-solid fa-arrows-rotate"></i>Refresh</button>
+<button class="btn-del" onclick="deleteAccount('${escAttr(uid)}','${authUidAttr}')"><i class="fa-solid fa-trash"></i></button>`;
+}
+
+const nickname = acc.nickname || "Player";
+const playerNum = acc.matches_played || acc.level || 0;
+const modeOv = String(acc.mode_override || "").toUpperCase();
+let modeBadge = "";
+if(modeOv === "BR"){
+modeBadge = `<span class="acc-target-badge" style="color:#7dd3fc;border-color:rgba(125,211,252,.3);background:rgba(125,211,252,.08);text-shadow:0 0 8px rgba(125,211,252,.5);">🛡 BR ONLY</span>`;
+} else if(modeOv === "LW"){
+modeBadge = `<span class="acc-target-badge" style="color:#ef4444;border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);text-shadow:0 0 8px rgba(239,68,68,.5);">⚠️ LW ONLY</span>`;
+} else {
+modeBadge = `<span class="acc-target-badge">🔄 AUTO</span>`;
+}
+
+let card = document.getElementById("acc-" + uid);
+if(!card){
+card = document.createElement("div");
+card.id = "acc-" + uid;
+card.className = "acc-card";
+container.appendChild(card);
+}
+card.className = "acc-card" + (isComplete ? " completed" : "") + (isStopped ? " stopped" : "");
+card.dataset.uid = uid;
+card.dataset.nick = nickname;
+card.dataset.status = cls;
+card.dataset.paused = isPaused ? "1" : "0";
+card.dataset.stopped = (isStopped || isComplete) ? "1" : "0";
+
+card.innerHTML = `
+<div class="acc-head">
+<div class="acc-id">
+<span class="acc-dot${dotCls}"></span>
+<span class="acc-nick">${esc(nickname)}</span>
+<span class="acc-num mono">${playerNum}</span>
+</div>
+<span class="acc-badge">${esc(acc.region || "—")}</span>
+</div>
+<div class="acc-uid-row">
+<span class="uid-chip">UID: ${esc(uid)}</span>
+<span class="status-chip status-${cls}">${esc(stText)}</span>
+${modeBadge}
+${targetLvl > 0 ? `<span class="acc-target-badge">🎯 Lv ${targetLvl}</span>` : ""}
+</div>
+<div class="acc-info">
+<div class="info-row"><span class="info-label"><i class="fa-solid fa-play"></i>Started</span><span class="info-value">${esc(fmtDur(upSecs))} ago</span></div>
+<div class="info-row"><span class="info-label"><i class="fa-solid fa-rotate"></i>Updated</span><span class="info-value">${esc(acc.last_updated || "just now")}</span></div>
+</div>
+<div class="uptime-row">
+<div class="uptime-box ${uptimeCls}">
+<span>Uptime</span>
+<strong class="uptime-live" data-uptime="${upSecs}" data-paused="${isPaused ? 1 : 0}" data-stopped="${(isStopped || isComplete) ? 1 : 0}">${fmtDur(upSecs)}</strong>
+</div>
+<div class="uptime-box">
+<span>Gained Exp</span>
+<strong>+${Number(acc.gained_exp || 0).toLocaleString()}</strong>
+</div>
+</div>
+<div class="metric-stack">
+<div class="metric-box"><span>Initial</span><strong>${Number(acc.initial_exp || 0).toLocaleString()}</strong></div>
+<div class="metric-box"><span>Current</span><strong>${curExp.toLocaleString()}</strong></div>
+<div class="metric-box gain"><span>Gained</span><strong>+${Number(acc.gained_exp || 0).toLocaleString()}</strong></div>
+</div>
+<div class="progress"><div class="progress-fill" style="width:${pct.toFixed(1)}%"></div></div>
+<div class="acc-stats-row">
+<span>Level ${level}</span>
+<span>${esc(stText)}</span>
+<span>Matches: ${acc.matches_played || 0}</span>
+</div>
+<div class="acc-actions">${actions}</div>
+`;
+});
+filterAccounts();
+}
+
+function setLogFilter(f, btn){
+activeLogFilter = f;
+document.querySelectorAll(".cfilter").forEach(x=>x.classList.remove("active"));
+if(btn) btn.classList.add("active");
+renderLogs(cachedLogs);
+}
+function renderLogs(logs){
+const stream = document.getElementById("console-stream");
+let list = logs || [];
+if(activeLogFilter === "match") list = list.filter(l => String(l.message || "").toLowerCase().includes("match"));
+else if(activeLogFilter === "success") list = list.filter(l => l.level === "success" || String(l.message || "").includes("EXP"));
+else if(activeLogFilter === "error") list = list.filter(l => l.level === "error" || l.level === "warning");
+stream.innerHTML = list.map(l => `<div class="log-line"><span class="log-ts">[${esc(l.time || "")}]</span><span class="log-msg ${l.level || "info"}">${esc(l.message || "")}</span></div>`).join("");
+stream.scrollTop = stream.scrollHeight;
+}
+async function clearLogs(){
+try{await fetch("/api/logs/clear", {method:"POST"});cachedLogs = [];renderLogs([]);toast("Console cleared","info");}catch(e){}
+}
+async function fetchStats(){
+try{
+const r = await fetch("/api/stats");
+if(!r.ok) throw new Error("HTTP " + r.status);
+const d = await r.json();
+const accs = Array.isArray(d.accounts) ? d.accounts : [];
+const logs = Array.isArray(d.logs) ? d.logs : [];
+setText("stat-accounts", d.total_accounts ?? accs.length);
+setText("stat-started", d.total_matches_started || 0);
+setText("stat-completed", d.total_matches || 0);
+setText("stat-exp", "+" + Number(d.total_gained_exp || 0).toLocaleString());
+setText("stat-active-matches", (d.total_active_matches || 0) + " active");
+const running = accs.filter(a => {
+const s = (a.status || "").toUpperCase();
+return s.includes("ONLINE") || s.includes("IN_MATCH") || s.includes("SEARCHING") || s.includes("CONNECTING");
+}).length;
+setText("stat-online", running + " running");
+const uptimeH = Math.max(0.016, (d.uptime || 60) / 3600);
+const perH = Math.round((d.total_matches_started || 0) / uptimeH);
+setText("stat-per-hour", "~" + perH + " / hour");
+setText("stat-exp-rate", "~" + Number(d.exp_per_hour || 0).toLocaleString() + " / hour");
+setText("m-started", d.total_matches_started || 0);
+setText("m-rate", "~" + perH + " / hour");
+setText("m-exp", "+" + Number(d.total_gained_exp || 0).toLocaleString());
+setText("m-exp-rate", "~" + Number(d.exp_per_hour || 0).toLocaleString() + " / hour");
+cachedAccounts = accs;
+cachedLogs = logs;
+renderAccounts(accs);
+renderLogs(logs);
+}catch(e){console.warn("Stats error:", e)}
+}
+function switchTab(name, btn){
+document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+if(btn) btn.classList.add("active");
+document.querySelectorAll(".mobile-tab").forEach(x=>x.classList.remove("active"));
+const el = document.getElementById("tab-" + name);
+if(el) el.classList.add("active");
+}
+function setText(id, v){const el = document.getElementById(id);if(el) el.innerText = v ?? ""}
+function esc(s){
+if(s === null || s === undefined) return "";
+return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function escAttr(s){return esc(s)}
+function fmtDur(sec){
+sec = Math.max(0, Math.floor(Number(sec) || 0));
+const h = Math.floor(sec / 3600);
+const m = Math.floor((sec % 3600) / 60);
+const s = sec % 60;
+if(h > 0) return `${h}h ${String(m).padStart(2,"0")}m`;
+if(m > 0) return `${m}m ${String(s).padStart(2,"0")}s`;
+return `${s}s`;
+}
+function manualRefresh(){fetchStats(); toast("Refreshed","info")}
+
+setInterval(()=>{
+const el = Math.floor((Date.now() - clientStart) / 1000);
+const h = String(Math.floor(el / 3600)).padStart(2, "0");
+const m = String(Math.floor((el % 3600) / 60)).padStart(2, "0");
+const s = String(el % 60).padStart(2, "0");
+setText("stat-uptime", `${h}:${m}:${s}`);
+}, 1000);
+
+setInterval(()=>{
+document.querySelectorAll(".uptime-live").forEach(el=>{
+if(el.dataset.paused === "1" || el.dataset.stopped === "1") return;
+let v = parseInt(el.dataset.uptime || "0") + 1;
+el.dataset.uptime = v;
+el.innerText = fmtDur(v);
+});
+}, 1000);
+
+setInterval(()=>{
+if(document.getElementById("app").style.display === "block") fetchStats();
+}, 4000);
+
+document.getElementById("login-key").addEventListener("keydown", e=>{if(e.key === "Enter") login(e)});
+</script>
+</body>
+</html>
