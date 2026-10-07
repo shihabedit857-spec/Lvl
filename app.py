@@ -187,7 +187,7 @@ async def main():
     bot_state.refresh_callbacks["on_account_deleted"] = on_account_deleted
     bot_state.refresh_callbacks["on_account_stopped"] = on_account_stopped
 
-    # ═══ Auto-detect local IP ═══
+    # ═══ Railway / Local PORT auto-detect ═══
     def _get_local_ip():
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -199,11 +199,17 @@ async def main():
         except Exception:
             return "127.0.0.1"
 
-    PORT = 3000
+    PORT = int(os.environ.get("PORT", 3000))
     local_ip = _get_local_ip()
 
     await start_web_dashboard("0.0.0.0", PORT)
-    print("\033[92m[+] Dashboard → http://{}:{}\033[0m".format(local_ip, PORT))
+
+    railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN") or os.environ.get("RAILWAY_STATIC_URL")
+    if railway_domain:
+        url = railway_domain if railway_domain.startswith("http") else f"https://{railway_domain}"
+        print("\033[92m[+] Dashboard → {}\033[0m".format(url))
+    else:
+        print("\033[92m[+] Dashboard → http://{}:{}\033[0m".format(local_ip, PORT))
     print("\033[92m[+] Local     → http://127.0.0.1:{}\033[0m".format(PORT))
     print("\033[92m[+] Access key: 15985683337\033[0m")
 
