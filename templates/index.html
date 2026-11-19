@@ -1,0 +1,3017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <title>JXE LEVEL PRO | FreeFire Level Up Bot Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+:root {
+  --bg: #050505;
+  --panel: rgba(12,12,12,.88);
+  --panel-2: rgba(18,18,18,.92);
+  --line: rgba(255,255,255,.11);
+  --line-hi: rgba(255,255,255,.28);
+  --white: #fff;
+  --soft: #d8d8d8;
+  --muted: #858585;
+  --green: #8dffb8;
+  --accent-cyan: #8fdcff;
+  --accent-green: #8dffb8;
+  --red: #ff7474;
+  --amber: #ffd27a;
+  --shadow: 0 20px 70px rgba(0,0,0,.55);
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;color:var(--white);background:#050505;
+  background-image:
+    radial-gradient(circle at 12% 8%,rgba(255,255,255,.075),transparent 26%),
+    radial-gradient(circle at 88% 18%,rgba(255,255,255,.035),transparent 24%),
+    linear-gradient(180deg,#050505 0%,#090909 52%,#040404 100%);
+  font-family:Inter,Outfit,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  padding:24px;overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;
+  background-image:radial-gradient(rgba(255,255,255,.35) .55px,transparent .55px);
+  background-size:7px 7px;mask-image:linear-gradient(to bottom,black,transparent 75%);z-index:-1;
+}
+.container{max-width:1760px;margin:0 auto}
+
+/* Shared shiny surface */
+header,.card-box,.stat-card,.account-card,.modal-card{
+  position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(20,20,20,.94),rgba(8,8,8,.94));
+  border:1px solid var(--line);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.045);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+header:before,.card-box:before,.stat-card:before,.account-card:before,.modal-card:before{
+  content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  background:conic-gradient(from var(--angle,0deg),transparent 0 70%,rgba(255,255,255,.42) 78%,transparent 87%);
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;padding:1px;opacity:.42;animation:border-spin 8s linear infinite;
+}
+@keyframes border-spin{to{--angle:360deg}}
+
+/* Expired / limit-reached card emphasis */
+.account-card.limit-expired-card{
+  border-color:rgba(255,72,72,.38)!important;
+  box-shadow:var(--shadow),inset 0 0 0 1px rgba(255,55,55,.10),0 0 24px rgba(255,45,45,.10)!important;
+  animation:expired-card-pulse 2.15s ease-in-out infinite;
+}
+.account-card.limit-expired-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  border:1px solid rgba(255,65,65,.58);
+  box-shadow:inset 0 0 26px rgba(255,45,45,.075);
+  animation:expired-ring 1.8s ease-in-out infinite;
+}
+.account-card.limit-expired-card .acc-status{
+  color:#ff7474!important;border-color:rgba(255,75,75,.34)!important;
+  background:rgba(255,55,55,.08)!important;
+}
+.expired-limit-mark{
+  position:absolute;right:14px;top:12px;z-index:4;display:inline-flex;align-items:center;gap:5px;
+  padding:4px 8px;border:1px solid rgba(255,75,75,.30);border-radius:999px;
+  color:#ff8585;background:rgba(90,12,12,.38);font:800 8px/1 "Outfit",sans-serif;
+  letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 14px rgba(255,50,50,.10);
+  animation:expired-badge 1.7s ease-in-out infinite;
+}
+.expired-limit-mark i{font-size:8px;animation:expired-icon 1.15s ease-in-out infinite}
+
+.account-card.limit-expired-card .expired-lock-seal{position:absolute;left:50%;top:50%;z-index:5;width:66px;height:66px;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,72,72,.92);background:radial-gradient(circle,rgba(65,8,8,.78) 0 43%,rgba(20,4,4,.45) 44% 100%);color:#ff6d6d;box-shadow:0 0 0 5px rgba(255,55,55,.08),0 0 28px rgba(255,45,45,.25),inset 0 0 18px rgba(255,45,45,.12);animation:lock-seal-pulse 1.55s ease-in-out infinite;pointer-events:none}
+.account-card.limit-expired-card .expired-lock-seal::before{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px dashed rgba(255,85,85,.55);animation:lock-seal-spin 5s linear infinite}
+.account-card.limit-expired-card .expired-lock-seal i{font-size:22px;filter:drop-shadow(0 0 7px rgba(255,70,70,.45))}
+@keyframes lock-seal-pulse{0%,100%{opacity:.72;box-shadow:0 0 0 5px rgba(255,55,55,.06),0 0 18px rgba(255,45,45,.16),inset 0 0 12px rgba(255,45,45,.08)}50%{opacity:1;box-shadow:0 0 0 8px rgba(255,55,55,.10),0 0 34px rgba(255,45,45,.34),inset 0 0 22px rgba(255,45,45,.16)}}
+@keyframes lock-seal-spin{to{transform:rotate(360deg)}}
+@keyframes expired-card-pulse{0%,100%{box-shadow:var(--shadow),inset 0 0 0 1px rgba(255,55,55,.08),0 0 16px rgba(255,45,45,.06)}50%{box-shadow:var(--shadow),inset 0 0 0 1px rgba(255,55,55,.18),0 0 30px rgba(255,45,45,.15)}}
+@keyframes expired-ring{0%,100%{opacity:.34;transform:scale(1)}50%{opacity:.82;transform:scale(1.004)}}
+@keyframes expired-badge{0%,100%{opacity:.72;transform:translateY(0)}50%{opacity:1;transform:translateY(-1px)}}
+@keyframes expired-icon{0%,100%{transform:scale(.9);opacity:.65}50%{transform:scale(1.18);opacity:1}}
+@media(prefers-reduced-motion:reduce){.account-card.limit-expired-card,.account-card.limit-expired-card::after,.expired-limit-mark,.expired-limit-mark i,.expired-lock-seal,.expired-lock-seal::before{animation:none}}
+@property --angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 22px;border-radius:22px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.logo-box{
+  width:50px;height:50px;flex:0 0 50px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+  color:#050505;font-size:21px;background:#fff;box-shadow:0 0 30px rgba(255,255,255,.16);position:relative;overflow:hidden;
+}
+.logo-box:after{content:"";position:absolute;width:180%;height:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);transform:rotate(-25deg);animation:shine 3.2s linear infinite}
+@keyframes shine{from{translate:-80% 0}to{translate:80% 0}}
+.brand-text h1{font-size:21px;font-weight:800;letter-spacing:-.6px;color:#fff}
+.brand-text p{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:4px}
+.live-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(141,255,184,.24);background:rgba(141,255,184,.07);color:var(--green);padding:4px 9px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block;box-shadow:0 0 12px currentColor;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{50%{opacity:.35;transform:scale(.72)}}
+.header-actions{display:flex;align-items:center;gap:9px}
+
+.btn{
+  position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:42px;padding:10px 17px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:700;letter-spacing:.01em;
+  color:#fff;background:#0d0d0d;cursor:pointer;transition:none;
+}
+.btn:before{content:none}
+.btn:hover{border-color:var(--line-hi)}
+.btn:active{transform:none}
+.btn-primary{background:#fff;color:#050505;border-color:#fff;box-shadow:0 8px 28px rgba(255,255,255,.12)}
+.btn-primary:before{background:conic-gradient(from 0deg,transparent,rgba(0,0,0,.32),transparent 20%)}
+.btn-secondary{background:rgba(255,255,255,.035)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.stat-card{border-radius:18px;padding:18px;display:flex;align-items:center;gap:15px;transition:transform .35s var(--ease),border-color .35s,box-shadow .35s}
+.stat-card:hover{transform:translateY(-4px);border-color:var(--line-hi);box-shadow:0 22px 55px rgba(0,0,0,.58),0 0 30px rgba(255,255,255,.035)}
+.stat-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)}
+.stat-icon.cyan,.stat-icon.green,.stat-icon.purple,.stat-icon.amber{color:#fff;background:rgba(255,255,255,.055)}
+.stat-content h3{font-size:24px;line-height:1;font-weight:800;letter-spacing:-.5px;color:#fff}
+.stat-content p{margin-top:6px;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+.dashboard-main{display:block}
+.card-box{border-radius:22px;padding:22px;min-width:0}
+.box-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.box-title{display:flex;align-items:center;gap:10px}
+.box-title i{color:#fff!important}
+.box-title h2{font-size:15px;font-weight:800;letter-spacing:-.2px}
+.box-title p{font-size:11px;color:var(--muted);margin-top:3px}
+.box-header>.btn{min-height:34px;padding:7px 12px;font-size:11px}
+
+.accounts-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}
+@media(max-width:1440px){.accounts-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1060px){.accounts-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.accounts-list{grid-template-columns:1fr}}
+.account-card{border-radius:17px;padding:15px;display:flex;flex-direction:column;justify-content:space-between;content-visibility:auto;contain-intrinsic-size:auto 360px;transition:transform .35s var(--ease),border-color .35s,background .35s}
+.account-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.25);background:linear-gradient(145deg,rgba(26,26,26,.98),rgba(9,9,9,.98))}
+.acc-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.acc-profile{display:flex;align-items:center;gap:11px;min-width:0}
+.acc-avatar{width:40px;height:40px;flex:0 0 40px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#fff;color:#050505;font-size:15px;box-shadow:0 0 20px rgba(255,255,255,.08)}
+.acc-info{min-width:0}.acc-info h4{font-size:14px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.acc-info p{font-size:11px;color:var(--muted);margin-top:3px}
+.acc-info > span[data-field="uid"]{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:3px 6px 3px 7px;border:1px solid rgba(255,255,255,.08);border-radius:7px;background:rgba(255,255,255,.025);color:rgba(255,255,255,.62);font:600 9px/1 "JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.025em;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:border-color .2s ease,color .2s ease,background .2s ease}
+.acc-info > span[data-field="uid"] .uid-copy-btn{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;padding:0;border:0;border-radius:5px;background:transparent;color:rgba(255,255,255,.45);cursor:pointer;transition:color .18s ease,background .18s ease,transform .18s ease}
+.acc-info > span[data-field="uid"] .uid-copy-btn:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.08)}
+.acc-info > span[data-field="uid"] .uid-copy-btn:active{transform:scale(.9)}
+.acc-info > span[data-field="uid"] .uid-copy-btn i{font-size:8px;pointer-events:none}
+.acc-info > span[data-field="uid"]::first-line{color:rgba(255,255,255,.42)}
+.account-card:hover .acc-info > span[data-field="uid"]{color:rgba(255,255,255,.78);border-color:rgba(255,255,255,.13);background:rgba(255,255,255,.04)}
+ .region-badge{display:inline-flex;margin-left:6px;padding:3px 7px;border:1px solid var(--line);border-radius:999px;font-size:9px;color:#bbb;vertical-align:middle}
+/* Animated flag badges for every supported server region. */
+.region-badge.flag-badge{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:25px;height:17px;min-width:25px;margin-left:5px;padding:0!important;border:1px solid rgba(255,255,255,.25);border-radius:2px;background:#111;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.4);font-size:0;line-height:0;position:relative;color:transparent!important;letter-spacing:0;isolation:isolate}
+.region-badge.flag-badge .flag-emoji{display:block;width:100%;height:100%;line-height:0;transform-origin:left center;animation:flag-fabric-wave 2.8s ease-in-out infinite;will-change:transform,filter}
+.region-badge.flag-badge .flag-emoji svg{display:block;width:100%;height:100%;object-fit:cover;filter:drop-shadow(1px 0 1px rgba(0,0,0,.22))}
+.region-badge.flag-badge::before{content:"";position:absolute;z-index:2;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.3),transparent 15%,rgba(255,255,255,.22) 38%,rgba(0,0,0,.16) 58%,rgba(255,255,255,.12) 76%,rgba(0,0,0,.22));opacity:.7;mix-blend-mode:soft-light}
+.region-badge.flag-badge::after{content:"";position:absolute;z-index:3;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.18) 18%,transparent 36%,rgba(0,0,0,.18) 55%,transparent 75%);background-size:200% 100%;animation:flag-light-travel 2.8s ease-in-out infinite;opacity:.75}
+@keyframes flag-fabric-wave{0%,100%{transform:perspective(100px) rotateY(-7deg) skewY(0deg) scaleX(.98);filter:brightness(.94)}25%{transform:perspective(100px) rotateY(5deg) skewY(1deg) scaleX(1);filter:brightness(1.04)}50%{transform:perspective(100px) rotateY(-3deg) skewY(-1deg) scaleX(.98);filter:brightness(.98)}75%{transform:perspective(100px) rotateY(7deg) skewY(.5deg) scaleX(1);filter:brightness(1.06)}}
+@keyframes flag-light-travel{0%,100%{background-position:120% 0}50%{background-position:-20% 0}}
+@media(prefers-reduced-motion:reduce){.region-badge.flag-badge .flag-emoji,.region-badge.flag-badge::after{animation:none}}
+.acc-status{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.08em;border:1px solid rgba(141,255,184,.18);color:var(--green);background:rgba(141,255,184,.055);white-space:nowrap;flex:0 0 auto}
+.acc-status.status-match{color:#8dffb8!important;border-color:rgba(141,255,184,.55)!important;background:rgba(141,255,184,.16)!important;box-shadow:0 0 20px rgba(141,255,184,.28)}
+.acc-status.status-searching{color:#58c6ff!important;border-color:rgba(88,198,255,.45)!important;background:rgba(88,198,255,.12)!important;box-shadow:0 0 16px rgba(88,198,255,.20)}
+.account-card.in-match{border-color:rgba(141,255,184,.48)!important;box-shadow:0 0 26px rgba(141,255,184,.18),var(--shadow)!important}
+.acc-status.offline,.status-offline{color:var(--red);border-color:rgba(255,116,116,.2);background:rgba(255,116,116,.05)}
+.level-limit-row{display:flex;align-items:center;gap:7px;margin-top:7px;min-height:26px;color:#686868;font-size:9px}
+.exp-limit-row{display:flex;align-items:center;gap:7px;margin-top:6px;min-height:26px;color:#686868;font-size:9px}.exp-limit-input{width:58px;height:25px;padding:0 7px;border:1px solid rgba(255,255,255,.08);border-radius:7px;background:rgba(255,255,255,.025);color:#ddd;outline:none;font:600 9px "JetBrains Mono",monospace}.exp-limit-input:focus{border-color:rgba(255,255,255,.22)}.exp-limit-state{margin-left:auto;color:#5f5f5f;font-size:9px;white-space:nowrap}.exp-limit-reached{color:#ffd27a!important}
+.limit-caption{font-size:9px;color:#777;white-space:nowrap}
+.level-limit-input{width:58px;height:25px;padding:0 7px;border:1px solid rgba(255,255,255,.08);border-radius:7px;background:rgba(255,255,255,.025);color:#ddd;outline:none;font:600 9px "JetBrains Mono",monospace}
+.level-limit-input:focus{border-color:rgba(255,255,255,.22)}
+.limit-set-btn{height:25px;padding:0 9px;border:1px solid rgba(255,255,255,.09);border-radius:7px;background:rgba(255,255,255,.045);color:#aaa;font:700 9px "Outfit",sans-serif;cursor:pointer}
+.limit-set-btn:hover{color:#fff;background:rgba(255,255,255,.075)}
+.limit-state{margin-left:auto;color:#5f5f5f;font-size:9px;white-space:nowrap}
+.status-expired{color:#ffd27a!important;border-color:rgba(255,210,122,.22)!important;background:rgba(255,210,122,.055)!important}
+.limit-action{height:32px;padding:0 12px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);color:#aaa;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font:700 10px "Outfit",sans-serif}
+.limit-action:hover{color:#fff;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)}
+.limit-action.start-action{color:#8dffb8;border-color:rgba(141,255,184,.18)}
+.limit-action.pause-action{color:#d7d7d7;border-color:rgba(255,255,255,.12)}
+.limit-action.remove-action{color:#ff9a9a;border-color:rgba(255,116,116,.16)}
+.limit-action.pause-action:hover{color:#fff;border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.065)}
+.limit-action.start-action:hover{color:#b9ffd1;border-color:rgba(141,255,184,.32);background:rgba(141,255,184,.055)}
+.limit-action.remove-action:hover{color:#ffb2b2;border-color:rgba(255,116,116,.28);background:rgba(255,116,116,.045)}
+.limit-action:disabled{opacity:.55;cursor:wait}.limit-action.loading{pointer-events:none;filter:brightness(.8)}.limit-action.loading i{animation:action-spin .7s linear infinite}@keyframes action-spin{to{transform:rotate(360deg)}}
+
+.exp-box{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.exp-item{padding:10px 11px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);border-radius:11px}.exp-label{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.07em}.exp-val{display:block;margin-top:5px;font-family:"JetBrains Mono",monospace;font-size:11px;color:#eee}
+.gained-badge{color:#fff;font-weight:700}
+.level-progress{margin-top:4px}.level-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-bottom:7px}.level-labels strong{color:#fff}.progress-bar-bg{height:7px;border-radius:99px;background:rgba(255,255,255,.075);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.055);box-shadow:inset 0 1px 5px rgba(0,0,0,.7),0 0 12px rgba(255,255,255,.025)}.progress-bar-bg:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.22) 48%,transparent 60%);background-size:220% 100%;animation:exp-track-shine 2.2s linear infinite;pointer-events:none}.progress-bar-fill{height:100%;min-width:15%;border-radius:99px;position:relative;overflow:hidden;background:linear-gradient(90deg,#555 0%,#bdbdbd 42%,#fff 72%,#a9d8ff 100%);box-shadow:0 0 8px rgba(255,255,255,.35),0 0 20px rgba(150,210,255,.16);transition:width .8s var(--ease);animation:exp-pulse 1.7s ease-in-out infinite}.progress-bar-fill:before{content:"";position:absolute;inset:-100% -35%;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.85) 50%,transparent 65%);animation:exp-sweep 1.8s linear infinite}.progress-bar-fill:after{content:"";position:absolute;right:2px;top:50%;width:5px;height:5px;transform:translateY(-50%);border-radius:50%;background:#fff;box-shadow:0 0 7px #fff,0 0 15px rgba(180,225,255,.9);animation:exp-orb 1.15s ease-in-out infinite}.exp-item{transition:border-color .3s,background .3s,box-shadow .3s}.exp-item:has(.exp-gained){animation:exp-card-pulse 2.4s ease-in-out infinite}.exp-gained{animation:exp-number-glow 1.8s ease-in-out infinite}.gained-badge{color:#fff;font-weight:700;text-shadow:0 0 10px rgba(255,255,255,.28)}@keyframes exp-track-shine{0%{background-position:120% 0}100%{background-position:-120% 0}}@keyframes exp-sweep{0%{transform:translateX(-70%) rotate(8deg)}100%{transform:translateX(70%) rotate(8deg)}}@keyframes exp-pulse{0%,100%{filter:brightness(.92)}50%{filter:brightness(1.12)}}@keyframes exp-orb{0%,100%{opacity:.55;transform:translateY(-50%) scale(.8)}50%{opacity:1;transform:translateY(-50%) scale(1.35)}}@keyframes exp-card-pulse{0%,100%{border-color:rgba(255,255,255,.07);box-shadow:none}50%{border-color:rgba(255,255,255,.16);box-shadow:0 0 22px rgba(255,255,255,.035)}}@keyframes exp-number-glow{0%,100%{text-shadow:0 0 5px rgba(255,255,255,.08)}50%{text-shadow:0 0 13px rgba(255,255,255,.28)}}
+.acc-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px}.action-btns{display:flex;gap:7px}
+.icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.035);color:#bbb;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:none}.icon-btn:hover{color:#fff;border-color:var(--line-hi);background:rgba(255,255,255,.08);transform:none}.icon-btn.danger:hover{color:var(--red);border-color:rgba(255,116,116,.3)}
+
+.logs-box{min-height:100%}.log-stream{height:540px;overflow:auto;padding:4px 2px;font-family:"JetBrains Mono",monospace;scrollbar-width:thin;scrollbar-color:#333 transparent}.log-item{padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.045);font-size:10px;line-height:1.55;animation:log-in .35s var(--ease)}.log-time{color:#666;margin-right:7px}.log-info{color:#bdbdbd}.log-success{color:var(--green)}.log-warning{color:var(--amber)}.log-error{color:var(--red)}
+@keyframes log-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.empty-state{grid-column:1/-1;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#555;text-align:center}.empty-state i{font-size:28px}.empty-state p{font-size:11px}
+
+.modal-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.modal-overlay.active{display:flex;animation:fade-in .25s ease}.modal-card{width:min(500px,100%);border-radius:22px;padding:22px;animation:modal-in .4s var(--ease)}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}@keyframes modal-in{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modal-header h3{font-size:16px}.form-group{margin-bottom:13px}.form-group label{display:block;color:#aaa;font-size:11px;font-weight:650;margin-bottom:7px}.form-input{width:100%;padding:12px 13px;border-radius:11px;border:1px solid var(--line);outline:none;background:#090909;color:#fff;font:inherit;font-size:12px;transition:.25s}.form-input:focus{border-color:rgba(255,255,255,.4);box-shadow:0 0 0 3px rgba(255,255,255,.045)}textarea.form-input{resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.bulk-add-card{width:min(650px,100%)}
+.bulk-input{font-family:"JetBrains Mono",monospace;line-height:1.55;min-height:220px}
+.bulk-format-hint{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#777;font-size:9px;line-height:1.4}
+.bulk-format-hint i{color:var(--accent-cyan);margin-right:4px}
+@media(max-width:650px){.bulk-add-card{padding:16px}.bulk-input{min-height:190px;font-size:11px}.bulk-format-hint{font-size:8px}}
+
+/* Premium delete interaction */
+.icon-btn.danger{position:relative;overflow:hidden}
+.icon-btn.danger:before{content:"";position:absolute;inset:-80%;background:conic-gradient(from 0deg,transparent 0 72%,rgba(255,116,116,.9) 82%,transparent 92%);animation:delete-ring 2.2s linear infinite;opacity:0;transition:opacity .25s}
+.icon-btn.danger:hover:before{opacity:.65}
+.icon-btn.danger i{position:relative;z-index:1}
+.icon-btn.danger.is-deleting{color:#ff7474!important;border-color:rgba(255,116,116,.55)!important;background:rgba(255,116,116,.09)!important;box-shadow:0 0 24px rgba(255,70,70,.18);cursor:wait}
+.account-card.account-exit{pointer-events:none;animation:account-exit .42s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes account-exit{0%{opacity:1;transform:translateX(0) scale(1);filter:blur(0)}55%{opacity:.35;transform:translateX(18px) scale(.985);filter:blur(.5px)}100%{opacity:0;transform:translateX(55px) scale(.96);filter:blur(3px);max-height:0;margin-top:-11px;padding-top:0;padding-bottom:0;border-width:0}}
+@keyframes delete-ring{to{transform:rotate(360deg)}}
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}.dashboard-main{grid-template-columns:1fr}.log-stream{height:360px}}
+/* Premium account loading placeholder — stays in the exact account position until login/profile resolves */
+.account-loading-card{position:relative;overflow:hidden;border-radius:17px;padding:16px;min-height:318px;border:1px solid rgba(255,255,255,.10);background:linear-gradient(145deg,rgba(22,22,22,.96),rgba(8,8,8,.98));}
+.account-loading-card::before{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.055),transparent);animation:account-skeleton-shimmer 1.45s ease-in-out infinite;}
+.account-loading-card > *{position:relative;z-index:1;}
+.account-loading-top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px;}
+.account-loading-profile{display:flex;align-items:center;gap:12px;}
+.skeleton-block{background:linear-gradient(90deg,rgba(255,255,255,.055),rgba(255,255,255,.11),rgba(255,255,255,.055));background-size:220% 100%;animation:skeleton-pulse 1.35s ease-in-out infinite;border-radius:8px;}
+.skeleton-avatar{width:44px;height:44px;border-radius:13px;}
+.skeleton-line{height:10px;margin-bottom:8px;}
+.skeleton-line.short{width:92px;}
+.skeleton-line.long{width:155px;}
+.skeleton-pill{width:92px;height:23px;border-radius:999px;}
+.account-loading-exp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.account-loading-exp .skeleton-box{height:67px;border-radius:12px;}
+.account-loading-bar{height:10px;width:100%;border-radius:999px;margin:10px 0 16px;}
+.account-loading-small{height:8px;width:180px;margin:0 auto 22px;border-radius:999px;}
+.account-loading-live{height:34px;border-radius:10px;margin-bottom:12px;}
+.account-loading-footer{height:58px;border-radius:12px;}
+@keyframes account-skeleton-shimmer{100%{transform:translateX(120%);}}
+@keyframes skeleton-pulse{0%,100%{opacity:.55;background-position:100% 0}50%{opacity:.9;background-position:0 0}}
+@media(max-width:650px){.account-loading-exp{grid-template-columns:1fr}.account-loading-card{min-height:420px;}}
+
+/* Unique account resolving loader */
+.account-loading-card{position:relative;min-height:318px;border-radius:18px;overflow:hidden;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.055),transparent 42%),linear-gradient(145deg,#151515,#080808);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 14px 45px rgba(0,0,0,.22);}
+.account-loading-card::after{content:"";position:absolute;inset:-35%;background:conic-gradient(from 0deg,transparent 0deg,rgba(255,255,255,.12) 45deg,transparent 92deg,transparent 360deg);animation:loader-orbit 2.4s linear infinite;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;padding:1px;border-radius:28px;}
+.account-loading-card .loader-core{position:absolute;left:50%;top:50%;width:76px;height:76px;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(255,255,255,.13);box-shadow:0 0 0 8px rgba(255,255,255,.018),0 0 38px rgba(255,255,255,.06);}
+.account-loading-card .loader-core::before,.account-loading-card .loader-core::after{content:"";position:absolute;inset:11px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(255,255,255,.82);border-right-color:rgba(255,255,255,.18);animation:loader-spin 1.1s linear infinite;}
+.account-loading-card .loader-core::after{inset:20px;border-top-color:rgba(255,255,255,.28);border-right-color:rgba(255,255,255,.72);animation-duration:.78s;animation-direction:reverse;}
+.account-loading-card .loader-label{position:absolute;left:0;right:0;top:calc(50% + 54px);text-align:center;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.58);font-weight:700;}
+.account-loading-card .loader-dots span{display:inline-block;width:4px;height:4px;margin:0 2px;border-radius:50%;background:rgba(255,255,255,.7);animation:loader-dot 1.1s ease-in-out infinite;}
+.account-loading-card .loader-dots span:nth-child(2){animation-delay:.14s}.account-loading-card .loader-dots span:nth-child(3){animation-delay:.28s}
+@keyframes loader-orbit{to{transform:rotate(360deg)}}
+@keyframes loader-spin{to{transform:rotate(360deg)}}
+@keyframes loader-dot{0%,100%{transform:translateY(0);opacity:.25}50%{transform:translateY(-3px);opacity:1}}
+@media(max-width:650px){.account-loading-card{min-height:390px}}
+
+/* Premium account skeleton loading */
+.skeleton-card{pointer-events:none;overflow:hidden}
+.skeleton-line,.skeleton-box{position:relative;overflow:hidden;background:rgba(255,255,255,.055);border-radius:8px}
+.skeleton-line:after,.skeleton-box:after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent);animation:skeleton-shimmer 1.25s ease-in-out infinite}
+.skeleton-avatar{width:42px;height:42px;border-radius:50%}
+.skeleton-name{width:145px;height:12px}.skeleton-sub{width:92px;height:9px;margin-top:8px}.skeleton-status{width:75px;height:25px;border-radius:999px}
+.skeleton-exp{height:48px}.skeleton-progress{height:8px;margin-top:12px}.skeleton-actions{height:26px;margin-top:14px}
+@keyframes skeleton-shimmer{100%{transform:translateX(100%)}}
+
+/* Undo toast action */
+.web-toast{max-width:min(430px,calc(100vw - 28px));gap:11px}
+.web-toast-content{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.web-toast-undo{display:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:9px;padding:7px 10px;font:inherit;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+.web-toast.undo-mode .web-toast-undo{display:inline-flex}
+.web-toast.undo-mode .web-toast-text{padding-right:2px}
+.web-toast.success{box-shadow:0 12px 38px rgba(141,255,184,.10)}
+
+.live-ratio-rate{margin-left:auto;margin-right:7px;min-width:62px;text-align:right;color:rgba(255,255,255,.58);font:600 8px/1 "JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .25s ease,text-shadow .25s ease,transform .25s ease}.live-ratio-toggle:hover .live-ratio-rate{color:rgba(255,255,255,.82)}.live-ratio-toggle[aria-expanded="true"] .live-ratio-rate{color:rgba(255,255,255,.78);text-shadow:0 0 9px rgba(255,255,255,.14)}
+
+/* Smooth live EXP number transition */
+[data-field="current_exp"],[data-field="gained_exp"]{font-variant-numeric:tabular-nums;transition:transform .25s ease,text-shadow .25s ease}
+.exp-counting{transform:scale(1.035);text-shadow:0 0 14px rgba(255,255,255,.3)}
+
+
+.next-exp-hint{margin-top:5px;text-align:center;color:rgba(255,255,255,.38);font-size:8px;font-weight:500;letter-spacing:.02em;line-height:1.2;min-height:11px;transition:opacity .25s ease,transform .25s ease}.next-exp-hint strong{color:rgba(255,255,255,.58);font-weight:600}.next-exp-hint.updating{opacity:.65;transform:translateY(-1px)}
+
+@media(max-width:650px){body{padding:12px}header{padding:15px;border-radius:17px;align-items:flex-start}.header-actions{flex-direction:column;width:100%;align-items:stretch}.header-actions .btn{width:100%}.brand-text h1{font-size:17px}.brand-text p{font-size:10px}.stats-grid{grid-template-columns:1fr 1fr;gap:9px}.stat-card{padding:13px;gap:10px}.stat-icon{width:40px;height:40px}.stat-content h3{font-size:20px}.card-box{padding:15px;border-radius:18px}.exp-box{grid-template-columns:1fr}.acc-status{font-size:8px}.acc-top{align-items:flex-start}.box-header{align-items:flex-start}}
+@media(max-width:430px){.stats-grid{grid-template-columns:1fr}.brand{gap:9px}.logo-box{width:43px;height:43px;flex-basis:43px}.header-actions{display:none}}
+
+
+
+/* Refined system status */
+.brand-text > p{
+    margin-top:13px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    min-height:18px;
+}
+.brand-text > p > span:last-child{
+    display:none;
+}
+.brand-text .live-tag{
+    padding:3px 8px;
+    min-height:19px;
+    gap:5px;
+    font-size:8px;
+    letter-spacing:.10em;
+    border-radius:999px;
+    box-shadow:0 0 14px rgba(141,255,184,.055),inset 0 1px 0 rgba(255,255,255,.06);
+    transform-origin:left center;
+    animation:live-breathe 2.4s ease-in-out infinite;
+}
+.brand-text .live-tag .pulse-dot{
+    width:5px;
+    height:5px;
+    box-shadow:0 0 8px currentColor;
+}
+@keyframes live-breathe{
+    0%,100%{opacity:.82;transform:translateY(0)}
+    50%{opacity:1;transform:translateY(-1px)}
+}
+@media(max-width:650px){
+    .brand-text > p{margin-top:6px}
+    .brand-text .live-tag{font-size:7px;padding:3px 7px;min-height:17px}
+}
+
+/* Premium JXE brand lockup */
+.brand-text .jxe-brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    line-height:1;
+    white-space:nowrap;
+}
+.brand-text .jxe-main{
+    position:relative;
+    font-size:24px;
+    font-weight:900;
+    letter-spacing:-1.2px;
+    color:#fff;
+    text-shadow:0 0 24px rgba(255,255,255,.12);
+}
+.brand-text .jxe-main::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:-5px;
+    height:1px;
+    background:linear-gradient(90deg,rgba(255,255,255,.75),transparent);
+    transform-origin:left;
+    animation:brand-line 2.8s ease-in-out infinite;
+}
+.brand-text .jxe-divider{
+    width:1px;
+    height:19px;
+    background:linear-gradient(180deg,transparent,#777,transparent);
+}
+.brand-text .jxe-level{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.16em;
+    color:#a7a7a7;
+    text-transform:uppercase;
+}
+.brand-text .jxe-pro{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    padding:5px 8px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:7px;
+    background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.025));
+    color:#fff;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.12em;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 18px rgba(255,255,255,.035);
+    overflow:hidden;
+}
+.brand-text .jxe-pro::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.32) 50%,transparent 75%);
+    transform:translateX(-130%);
+    animation:brand-pro-shine 3.2s ease-in-out infinite;
+}
+.brand-text .jxe-pro span{position:relative;z-index:1}
+@keyframes brand-line{
+    0%,100%{opacity:.35;transform:scaleX(.45)}
+    50%{opacity:1;transform:scaleX(1)}
+}
+@keyframes brand-pro-shine{
+    0%,45%{transform:translateX(-130%)}
+    75%,100%{transform:translateX(130%)}
+}
+@media(max-width:650px){
+    .brand-text .jxe-main{font-size:20px}
+    .brand-text .jxe-level{font-size:10px}
+    .brand-text .jxe-pro{font-size:8px;padding:4px 7px}
+    .brand-text .jxe-divider{height:16px}
+}
+    
+/* Smooth premium motion */
+.card-box,.stat-card,.account-card,.btn,.icon-btn,.modal-card{
+    will-change:transform;
+}
+@keyframes account-enter{
+    from{opacity:0;transform:translateY(8px) scale(.99)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.account-card.new-account{
+    animation:account-enter .48s var(--ease) both !important;
+}
+.account-card.live-updated{
+    animation:card-live-update .42s var(--ease);
+}
+@keyframes card-live-update{
+    0%{transform:translateY(-1px);box-shadow:0 0 0 rgba(255,255,255,0)}
+    45%{transform:translateY(0);box-shadow:0 0 26px rgba(255,255,255,.045)}
+    100%{transform:translateY(0);box-shadow:none}
+}
+
+
+/* Premium account actions */
+.acc-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid rgba(255,255,255,.055);
+}
+.acc-actions > span{
+    color:#666;
+    font-size:10px;
+    transition:color .3s ease;
+}
+.action-btns{
+    display:flex;
+    gap:8px;
+}
+.icon-btn{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.018));
+    color:#a8a8a8;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 7px 20px rgba(0,0,0,.28);
+    transition:
+        transform .32s var(--ease),
+        color .32s ease,
+        border-color .32s ease,
+        background .32s ease,
+        box-shadow .32s ease;
+}
+.icon-btn::before{
+    content:"";
+    position:absolute;
+    inset:-80%;
+    z-index:-1;
+    background:conic-gradient(from 0deg,transparent 0 62%,rgba(255,255,255,.45) 70%,transparent 79%);
+    animation:action-ring 3.8s linear infinite;
+    opacity:.16;
+}
+.icon-btn::after{
+    content:"";
+    position:absolute;
+    left:-120%;
+    top:0;
+    width:70%;
+    height:100%;
+    transform:skewX(-18deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+    transition:left .55s ease;
+}
+.icon-btn:hover{
+    transform:translateY(-2px) scale(1.035);
+    color:#fff;
+    border-color:rgba(255,255,255,.25);
+    background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.028));
+    box-shadow:0 12px 30px rgba(0,0,0,.42),0 0 20px rgba(255,255,255,.045);
+}
+.icon-btn:hover::after{left:145%}
+.icon-btn:active{transform:translateY(0) scale(.97)}
+.icon-btn.refreshing{
+    color:#fff;
+    border-color:rgba(255,255,255,.34);
+    box-shadow:0 0 24px rgba(255,255,255,.08);
+}
+.icon-btn.refreshing i{
+    animation:refresh-spin .75s linear infinite;
+}
+.icon-btn.danger:hover{
+    color:#ff9a9a;
+    border-color:rgba(255,105,105,.36);
+    background:linear-gradient(145deg,rgba(255,85,85,.10),rgba(255,255,255,.02));
+    box-shadow:0 12px 30px rgba(0,0,0,.42),0 0 22px rgba(255,90,90,.07);
+}
+@keyframes action-ring{to{transform:rotate(360deg)}}
+@keyframes refresh-spin{to{transform:rotate(360deg)}}
+
+/* EXP delta popup */
+.exp-fx-layer{
+    position:fixed;
+    z-index:2500;
+    pointer-events:none;
+    font-family:"JetBrains Mono",monospace;
+    font-size:13px;
+    font-weight:800;
+    color:#fff;
+    text-shadow:0 0 8px rgba(255,255,255,.65),0 0 18px rgba(170,220,255,.32);
+    white-space:nowrap;
+    animation:exp-float-up 1.15s cubic-bezier(.16,1,.3,1) forwards;
+}
+.exp-fx-layer::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:100%;
+    width:34px;
+    height:2px;
+    transform:translateX(-50%);
+    border-radius:99px;
+    background:linear-gradient(90deg,transparent,#fff,transparent);
+    opacity:.7;
+    filter:blur(.3px);
+    animation:exp-streak 1.15s ease-out forwards;
+}
+@keyframes exp-float-up{
+    0%{opacity:0;transform:translate(-50%,8px) scale(.72);filter:blur(2px)}
+    16%{opacity:1;transform:translate(-50%,-2px) scale(1.08);filter:blur(0)}
+    65%{opacity:1;transform:translate(-50%,-35px) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-68px) scale(.92);filter:blur(1px)}
+}
+@keyframes exp-streak{
+    0%{opacity:0;transform:translateX(-50%) scaleX(.3)}
+    20%{opacity:1}
+    100%{opacity:0;transform:translate(-50%,22px) scaleX(1.25)}
+}
+.exp-item.exp-gained-flash{
+    border-color:rgba(255,255,255,.32)!important;
+    background:rgba(255,255,255,.055)!important;
+    box-shadow:0 0 28px rgba(255,255,255,.075);
+    animation:exp-box-flash .9s var(--ease);
+}
+.exp-item.exp-gained-flash .exp-gained{
+    animation:exp-value-pop .85s var(--ease);
+}
+@keyframes exp-box-flash{
+    0%{transform:scale(.98)}
+    35%{transform:scale(1.035)}
+    100%{transform:scale(1)}
+}
+@keyframes exp-value-pop{
+    0%{transform:translateY(4px);opacity:.35}
+    45%{transform:translateY(-2px);opacity:1}
+    100%{transform:translateY(0)}
+}
+
+
+/* Ultra-smooth account list / refresh reflow */
+.accounts-list{
+    position:relative;
+    overflow:visible;
+    contain:layout style;
+}
+.account-card{
+    width:100%;
+    min-width:0;
+    transform-origin:50% 0;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    animation:none !important;
+    transition:
+        transform .48s var(--ease),
+        opacity .48s var(--ease),
+        max-height .48s var(--ease),
+        margin .48s var(--ease),
+        padding .48s var(--ease),
+        border-color .35s ease,
+        background .35s ease,
+        box-shadow .35s ease;
+}
+.account-card.account-exit{
+    pointer-events:none !important;
+    max-height:500px;
+    overflow:hidden;
+    animation:account-exit .52s cubic-bezier(.65,0,.35,1) forwards !important;
+}
+.account-card.refreshing-card{
+    transform:translateY(-1px);
+}
+.account-card.refreshing-card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    border-radius:inherit;
+    background:linear-gradient(
+        105deg,
+        transparent 0%,
+        transparent 38%,
+        rgba(255,255,255,.075) 50%,
+        transparent 62%,
+        transparent 100%
+    );
+    background-size:220% 100%;
+    animation:card-refresh-sweep 1.1s ease-in-out;
+}
+.account-card.refresh-success{
+    animation:refresh-success .72s var(--ease);
+}
+@keyframes card-refresh-sweep{
+    from{background-position:120% 0}
+    to{background-position:-120% 0}
+}
+@keyframes refresh-success{
+    0%{transform:translateY(-1px) scale(.998)}
+    42%{transform:translateY(0) scale(1.006)}
+    100%{transform:translateY(0) scale(1)}
+}
+
+/* Keep the whole account section visually inside its panel */
+.card-box{
+    overflow:hidden;
+}
+.accounts-list{
+    overflow:visible;
+}
+
+
+/* Native premium delete dialog */
+.delete-dialog{
+    width:min(430px,calc(100vw - 28px));
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:24px;
+    padding:25px;
+    color:#fff;
+    background:
+        radial-gradient(circle at 50% -20%,rgba(255,100,100,.10),transparent 45%),
+        linear-gradient(145deg,#151515,#090909);
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.72),
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 0 0 1px rgba(255,255,255,.025);
+    overflow:hidden;
+}
+.delete-dialog::backdrop{
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+}
+.delete-dialog[open]{
+    animation:delete-dialog-in .34s var(--ease) both;
+}
+.delete-dialog-glow{
+    position:absolute;
+    width:190px;height:190px;
+    left:50%;top:-135px;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:rgba(255,75,75,.12);
+    filter:blur(38px);
+    pointer-events:none;
+}
+.delete-dialog-icon{
+    position:relative;
+    width:48px;height:48px;
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#ff9b9b;
+    background:rgba(255,80,80,.07);
+    border:1px solid rgba(255,100,100,.18);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 28px rgba(255,80,80,.07);
+    margin-bottom:17px;
+}
+.delete-dialog-content{position:relative}
+.delete-dialog-kicker{
+    color:#ff8f8f;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.15em;
+    margin-bottom:6px;
+}
+.delete-dialog-content h3{
+    font-size:20px;
+    letter-spacing:-.45px;
+    margin:0;
+}
+.delete-dialog-content p{
+    margin-top:8px;
+    color:#858585;
+    font-size:12px;
+    line-height:1.6;
+}
+.delete-dialog-content strong{
+    color:#e9e9e9;
+    font-family:"JetBrains Mono",monospace;
+}
+.delete-dialog-actions{
+    position:relative;
+    display:flex;
+    justify-content:flex-end;
+    gap:9px;
+    margin-top:22px;
+}
+.delete-dialog-actions .btn{min-height:40px}
+.delete-confirm-btn{
+    color:#fff;
+    background:linear-gradient(145deg,#351717,#1c0d0d);
+    border-color:rgba(255,105,105,.24);
+}
+.delete-confirm-btn:hover{
+    color:#fff;
+    border-color:rgba(255,120,120,.48);
+    box-shadow:0 12px 32px rgba(255,70,70,.10);
+    background:linear-gradient(145deg,#451b1b,#210e0e);
+}
+.delete-confirm-btn.loading{
+    pointer-events:none;
+    opacity:.7;
+}
+.delete-confirm-btn.loading i{animation:delete-spin .7s linear infinite}
+@keyframes delete-spin{to{transform:rotate(360deg)}}
+@keyframes delete-dialog-in{
+    from{opacity:0;transform:translateY(12px) scale(.96)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(max-width:480px){
+    .delete-dialog{padding:21px;border-radius:20px}
+    .delete-dialog-actions{flex-direction:column-reverse}
+    .delete-dialog-actions .btn{width:100%}
+}
+
+/* Pure web delete modal — never uses the browser's native confirm() popup */
+.delete-modal-overlay{
+    display:flex;
+    visibility:hidden;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .24s ease, visibility 0s linear .24s;
+}
+.delete-modal-overlay.active{
+    display:flex;
+    visibility:visible;
+    opacity:1;
+    pointer-events:auto;
+    animation:none;
+    transition:opacity .24s ease;
+}
+.delete-modal-overlay .delete-dialog{
+    transform:translateY(16px) scale(.965);
+    opacity:0;
+    transition:transform .42s var(--ease), opacity .28s ease;
+}
+.delete-modal-overlay.active .delete-dialog{
+    transform:translateY(0) scale(1);
+    opacity:1;
+}
+.delete-modal-overlay.closing{
+    opacity:0;
+}
+.delete-modal-overlay.closing .delete-dialog{
+    transform:translateY(10px) scale(.975);
+    opacity:0;
+}
+body.modal-open{overflow:hidden}
+
+
+/* Premium lightweight toast */
+.web-toast{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    z-index:3000;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    max-width:min(440px,calc(100vw - 28px));
+    padding:12px 15px;
+    border:1px solid rgba(255,255,255,.13);
+    border-radius:14px;
+    color:#eee;
+    background:linear-gradient(145deg,rgba(24,24,24,.96),rgba(8,8,8,.96));
+    box-shadow:0 22px 70px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.07);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    font-size:12px;
+    font-weight:600;
+    pointer-events:none;
+    opacity:0;
+    transform:translate(-50%,18px) scale(.97);
+    transition:opacity .28s ease,transform .42s var(--ease);
+}
+.web-toast.show{
+    opacity:1;
+    transform:translate(-50%,0) scale(1);
+}
+.web-toast.undo-mode{pointer-events:auto !important;touch-action:manipulation;}
+.web-toast.show .web-toast-undo{pointer-events:auto;cursor:pointer;position:relative;z-index:2;}
+.web-toast-undo:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.25);transform:translateY(-1px);}
+.web-toast-undo:active{transform:translateY(0) scale(.97);}
+.web-toast-icon{
+    width:25px;height:25px;border-radius:8px;
+    display:grid;place-items:center;
+    color:#fff;background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.08);
+    flex:0 0 25px;
+}
+.web-toast.error .web-toast-icon{
+    color:#ff9b9b;
+    background:rgba(255,80,80,.08);
+    border-color:rgba(255,100,100,.16);
+}
+.web-toast.success .web-toast-icon{
+    color:#9dffc0;
+    background:rgba(100,255,150,.07);
+    border-color:rgba(120,255,170,.15);
+}
+
+
+/* Polling stays visually quiet: no list flash/reflow during background refresh */
+.accounts-list{
+    transition:opacity .18s ease;
+}
+.accounts-list.is-polling::before{
+    content:"";
+    position:absolute;
+    top:-1px;
+    left:0;
+    width:22%;
+    height:1px;
+    border-radius:99px;
+    background:linear-gradient(90deg,transparent,#fff,transparent);
+    opacity:.18;
+    animation:poll-sweep 1.25s ease-in-out infinite;
+    pointer-events:none;
+}
+@keyframes poll-sweep{
+    0%{transform:translateX(-20%)}
+    100%{transform:translateX(480%)}
+}
+
+
+/* ===== Command Center ===== */
+.command-center{margin:18px 0 22px;padding:20px 22px;border-radius:22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;transition:padding .28s ease,margin .28s ease,border-radius .28s ease}
+.cc-info{flex:1}
+.cc-topline{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.cc-collapse-btn{width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.045);color:#d8d8d8;cursor:pointer;transition:transform .25s ease,background .2s ease,border-color .2s ease}
+.cc-collapse-btn:hover{background:rgba(255,255,255,.09);border-color:var(--line-hi)}
+.cc-collapse-btn i{transition:transform .28s ease}
+.command-center.is-collapsed{padding:10px 14px;margin-top:12px;margin-bottom:14px;gap:10px}
+.command-center.is-collapsed .cc-icon{width:34px;height:34px;border-radius:10px;font-size:14px}
+.command-center.is-collapsed .cc-info h2{font-size:13px}
+.command-center.is-collapsed .cc-info p,.command-center.is-collapsed .cc-actions,.command-center.is-collapsed #cc-actions,.command-center.is-collapsed #cc-actions .cc-btn{display:none!important;visibility:hidden!important;pointer-events:none!important}
+.command-center.is-collapsed .cc-collapse-btn i{transform:rotate(180deg)}
+.command-center.is-collapsed .cc-collapse-btn{width:32px;height:32px;flex-basis:32px}
+.cc-info{display:flex;align-items:center;gap:14px;min-width:240px}
+.cc-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:18px;background:linear-gradient(145deg,rgba(143,220,255,.18),rgba(141,255,184,.08));border:1px solid var(--line-hi);color:var(--accent-cyan)}
+.cc-info h2{font-size:16px;font-weight:700;letter-spacing:.3px}
+.cc-info p{font-size:12px;color:var(--muted);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.cc-info p b{color:var(--soft);font-family:"JetBrains Mono",monospace;font-weight:600}
+.cc-actions{display:flex;flex-wrap:wrap;gap:10px}
+.cc-btn{position:relative;display:inline-flex;align-items:center;gap:9px;padding:12px 18px;border-radius:14px;font:600 13px Outfit,sans-serif;letter-spacing:.3px;cursor:pointer;color:var(--white);background:rgba(255,255,255,.04);border:1px solid var(--line);transition:transform .25s var(--ease),border-color .25s,background .25s,box-shadow .25s}
+.cc-btn:hover{transform:translateY(-2px)}
+.cc-btn:disabled{opacity:.55;cursor:wait;transform:none}
+.cc-btn.loading i{animation:cc-spin .8s linear infinite}
+@keyframes cc-spin{to{transform:rotate(360deg)}}
+.cc-btn.pause{color:var(--amber);border-color:rgba(255,210,122,.3)}
+.cc-btn.pause:hover{background:rgba(255,210,122,.1);box-shadow:0 0 24px rgba(255,210,122,.18)}
+.cc-btn.start{color:var(--green);border-color:rgba(141,255,184,.3)}
+.cc-btn.start:hover{background:rgba(141,255,184,.1);box-shadow:0 0 24px rgba(141,255,184,.18)}
+.cc-btn.refresh{color:var(--accent-cyan);border-color:rgba(143,220,255,.3)}
+.cc-btn.refresh:hover{background:rgba(143,220,255,.1);box-shadow:0 0 24px rgba(143,220,255,.18)}
+.cc-btn.danger{color:var(--red);border-color:rgba(255,116,116,.3)}
+.cc-btn.danger:hover{background:rgba(255,116,116,.1);box-shadow:0 0 24px rgba(255,116,116,.2)}
+.cc-btn.limits{color:#d7c6ff;border-color:rgba(190,160,255,.3)}
+.cc-btn.limits:hover{background:rgba(190,160,255,.09);box-shadow:0 0 22px rgba(190,160,255,.12)}
+.global-limits-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.global-limit-field label{display:block;color:#aaa;font-size:11px;margin-bottom:7px}
+.global-limit-field input{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:11px;background:#090909;color:#fff;font:600 13px "JetBrains Mono",monospace;outline:none}
+.global-limit-field input:focus{border-color:rgba(190,160,255,.5)}
+.global-limit-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:12px}
+@media(max-width:520px){.global-limits-grid{grid-template-columns:1fr}.global-limit-field input{padding:11px}}
+.cc-confirm{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);padding:20px}
+.cc-confirm.active{display:flex}
+.cc-confirm-card{width:100%;max-width:420px;padding:26px;border-radius:22px;background:linear-gradient(145deg,rgba(20,20,20,.98),rgba(8,8,8,.98));border:1px solid var(--line-hi);box-shadow:var(--shadow);animation:cc-pop .3s var(--ease)}
+@keyframes cc-pop{from{opacity:0;transform:scale(.94) translateY(8px)}}
+.cc-confirm-card h3{font-size:18px;display:flex;gap:10px;align-items:center}
+.cc-confirm-card p{color:var(--muted);font-size:13px;margin:10px 0 16px;line-height:1.55}
+.cc-confirm-card input{width:100%;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--white);font:600 14px "JetBrains Mono",monospace;outline:none}
+.cc-confirm-card input:focus{border-color:var(--red)}
+.cc-confirm-row{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+@media (max-width:720px){.command-center{padding:14px;gap:12px}.cc-topline{width:100%}.cc-info{min-width:0}.cc-actions{width:100%}.cc-btn{flex:1 1 calc(50% - 10px);justify-content:center}.command-center.is-collapsed .cc-topline{width:100%}}
+</style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="brand">
+                <div class="logo-box">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="brand-text">
+                    <h1 class="jxe-brand">
+    <span class="jxe-main">JXE</span>
+    <span class="jxe-divider"></span>
+    <span class="jxe-level">LEVEL UP</span>
+    <span class="jxe-pro"><span>PRO</span></span>
+</h1>
+                    <p>
+                        <span class="live-tag"><span class="pulse-dot"></span> System Live</span>
+                        <span>•</span>
+                    </p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="header-refresh-btn" onclick="manualRefresh()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                <button class="btn btn-primary" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> Add Account</button>
+            </div>
+        </header>
+
+        <!-- Command Center -->
+        <section class="command-center card-box" id="command-center" aria-label="Global controls">
+            <div class="cc-topline">
+                <div class="cc-info">
+                    <div class="cc-icon"><i class="fa-solid fa-sliders"></i></div>
+                    <div>
+                        <h2>Command Center</h2>
+                        <p><span>Running <b id="cc-running">0</b></span><span>Paused <b id="cc-paused">0</b></span><span>Total <b id="cc-total">0</b></span></p>
+                    </div>
+                </div>
+                <button type="button" class="cc-collapse-btn" id="cc-collapse-btn" onclick="toggleCommandCenterCollapse()" aria-expanded="true" aria-controls="cc-actions" title="Hide Command Center controls"><i class="fa-solid fa-chevron-up"></i></button>
+            </div>
+            <div class="cc-actions" id="cc-actions">
+                <button type="button" class="cc-btn pause" id="cc-toggle-btn" onclick="toggleAllRun(this)"><i class="fa-solid fa-pause"></i> <span>Pause All</span></button>
+                <button type="button" class="cc-btn refresh" onclick="openSysConfirm('refresh')"><i class="fa-solid fa-arrows-rotate"></i> System Refresh</button>
+                <button type="button" class="cc-btn danger" onclick="openSysConfirm('delete')"><i class="fa-solid fa-trash-can"></i> Delete All</button>
+                <button type="button" class="cc-btn limits" onclick="openGlobalLimits()"><i class="fa-solid fa-sliders"></i> One-shot Limits</button>
+            </div>
+        </section>
+
+        <div class="cc-confirm" id="global-limits-modal" aria-hidden="true" onclick="if(event.target===this)closeGlobalLimits()">
+            <div class="cc-confirm-card" role="dialog" aria-modal="true" aria-labelledby="global-limits-title">
+                <h3 id="global-limits-title"><i class="fa-solid fa-sliders" style="color:#c6a6ff"></i> One-shot Limits</h3>
+                <p>Set the same limits for every account in one go. Leave a field empty to remove that custom limit from all accounts.</p>
+                <div class="global-limits-grid">
+                    <div class="global-limit-field"><label for="global-level-limit">Level limit (1–100)</label><input id="global-level-limit" type="number" min="1" max="100" step="1" placeholder="e.g. 50"></div>
+                    <div class="global-limit-field"><label for="global-exp-limit">Daily EXP limit</label><input id="global-exp-limit" type="number" min="1" max="1000000000" step="1000" placeholder="e.g. 50000"></div>
+                </div>
+                <div class="global-limit-note" id="global-limits-progress">Applies to all account cards currently loaded in the dashboard.</div>
+                <div class="cc-confirm-row">
+                    <button type="button" class="btn btn-secondary" onclick="closeGlobalLimits()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="global-limits-apply" onclick="applyGlobalLimits()"><i class="fa-solid fa-check"></i> Apply to All</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cc-confirm" id="cc-confirm" onclick="if(event.target===this)closeSysConfirm()">
+            <div class="cc-confirm-card" role="dialog" aria-modal="true">
+                <h3 id="cc-confirm-title"></h3>
+                <p id="cc-confirm-text"></p>
+                <input id="cc-confirm-input" placeholder="Type DELETE to confirm" autocomplete="off" style="display:none">
+                <div class="cc-confirm-row">
+                    <button type="button" class="btn btn-secondary" onclick="closeSysConfirm()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="cc-confirm-go" onclick="runSysAction()">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon cyan"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-content">
+                    <h3 id="stat-total-accounts">0</h3>
+                    <p>Active Accounts</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fa-solid fa-angles-up"></i></div>
+                <div class="stat-content">
+                    <h3 id="stat-total-exp" style="color:var(--accent-green)">+0 EXP</h3>
+                    <p>Total EXP Gained</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fa-solid fa-gamepad"></i></div>
+                <div class="stat-content">
+                    <h3 id="stat-total-matches">0</h3>
+                    <p>Matches Completed</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="stat-content">
+                    <h3 id="stat-uptime" class="premium-timer" aria-label="Bot uptime">00:00:00</h3>
+                    <p>Bot Uptime</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-main">
+            <!-- Accounts List -->
+            <div class="card-box">
+                <div class="box-header">
+                    <div class="box-title">
+                        <i class="fa-solid fa-user-astronaut" style="color:var(--accent-cyan)"></i>
+                        <span>Live Accounts & EXP Monitor</span>
+                    </div>
+                </div>
+                <div class="accounts-list" id="accounts-container">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        <p>Loading active accounts...</p>
+                    </div>
+                </div>
+            </div>
+</div>
+    </div>
+
+
+    <!-- Premium Delete Confirmation -->
+    <div class="modal-overlay delete-modal-overlay" id="delete-modal" aria-hidden="true">
+        <div class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
+            <div class="delete-dialog-glow"></div>
+            <div class="delete-dialog-icon"><i class="fa-solid fa-trash-can"></i></div>
+            <div class="delete-dialog-content">
+                <div class="delete-dialog-kicker">REMOVE ACCOUNT</div>
+                <h3 id="delete-dialog-title">Delete this account?</h3>
+                <p>Are you sure you want to remove <strong id="delete-dialog-uid">—</strong>?</p>
+            </div>
+            <div class="delete-dialog-actions">
+                <button type="button" class="btn btn-secondary" id="delete-cancel-btn">Cancel</button>
+                <button type="button" class="btn delete-confirm-btn" id="delete-confirm-btn">
+                    <i class="fa-solid fa-trash-can"></i><span>Delete Account</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div class="modal-overlay add-account-overlay" id="add-modal" aria-hidden="true">
+        <div class="modal-card add-account-card" role="dialog" aria-modal="true" aria-labelledby="add-account-title">
+            <div class="modal-header">
+                <div class="add-account-heading"><span class="add-account-kicker">ACCOUNT MANAGER</span><h3 id="add-account-title"><i class="fa-solid fa-user-plus" style="margin-right:8px;"></i> Add New Account</h3><p>Choose a method and add your account securely.</p></div>
+                <button class="icon-btn" onclick="closeAddModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="add-acc-form" onsubmit="submitAddAccount(event)">
+                <div class="form-group">
+                    <label>Account Type</label>
+                    <select class="form-input" id="acc-type" onchange="toggleFormType()">
+                        <option value="guest">Guest Account (UID + Password)</option>
+                        <option value="token">Access Token</option>
+                        <option value="bulk">Bulk Import</option>
+                    </select>
+                </div>
+                <div id="guest-fields">
+                    <div class="form-group">
+                        <label>Guest UID</label>
+                        <input type="text" class="form-input" id="acc-uid" placeholder="e.g. 7644913583">
+                    </div>
+                    <div class="form-group">
+                        <label>Guest Password / Secret</label>
+                        <input type="text" class="form-input" id="acc-password" placeholder="e.g. ZERO_GRAVITY_4NM38">
+                    </div>
+                </div>
+                <div id="token-fields" style="display:none;">
+                    <div class="form-group">
+                        <label>Access Token</label>
+                        <textarea class="form-input token-input" id="acc-token" rows="4" placeholder="Paste one token...
+
+You can also paste multiple tokens, one per line."></textarea>
+                        <div class="inline-helper"><span><i class="fa-solid fa-wand-magic-sparkles"></i> Multiple lines are auto-detected.</span><button type="button" class="mini-link-btn" onclick="switchToBulkMode()">Use Bulk Import</button></div>
+                    </div>
+                </div>
+                <div id="bulk-fields" style="display:none;">
+                    <div class="bulk-mode-tabs">
+                        <button type="button" class="bulk-tab active" data-tab="paste" onclick="setBulkTab('paste')"><i class="fa-solid fa-paste"></i> Paste</button>
+                        <button type="button" class="bulk-tab" data-tab="file" onclick="setBulkTab('file')"><i class="fa-solid fa-file-arrow-up"></i> File</button>
+                    </div>
+                    <div id="bulk-paste-panel">
+                        <div class="form-group">
+                            <label>Bulk Data</label>
+                            <textarea class="form-input bulk-input compact-bulk-input" id="bulk-account-input" rows="8" placeholder="TXT:
+1234567890:PASSWORD
+1234567891:PASSWORD2
+ACCESS_TOKEN_1
+ACCESS_TOKEN_2
+
+JSON is also supported — it will be auto-detected."></textarea>
+                        </div>
+                    </div>
+                    <div id="bulk-file-panel" style="display:none;">
+                        <div class="bulk-file-drop" id="bulk-file-drop">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <strong>Choose TXT or JSON</strong>
+                            <span id="bulk-file-name">No file selected</span>
+                            <input type="file" id="bulk-file-input" accept=".txt,.json,application/json,text/plain" onchange="handleBulkFile(this.files[0])">
+                            <button type="button" class="btn btn-secondary file-pick-btn" onclick="document.getElementById('bulk-file-input').click()">Select File</button>
+                        </div>
+                    </div>
+                    <div class="bulk-format-hint"><span><i class="fa-solid fa-wand-magic-sparkles"></i> UID:PASS, tokens and JSON are auto-detected.</span><span id="bulk-detect-count">0 accounts detected</span></div>
+                </div>
+                <div class="add-account-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save & Start</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Add Accounts Modal -->
+    <div class="modal-overlay" id="bulk-add-modal">
+        <div class="modal-card bulk-add-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-layer-group" style="color:var(--accent-cyan); margin-right:8px;"></i> Bulk Add Accounts</h3>
+                <button class="icon-btn" onclick="closeBulkAddModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="form-group">
+                <label>Paste JSON / TXT or upload a file</label>
+                <textarea class="form-input bulk-input" id="bulk-modal-input" rows="9" placeholder="1234567890:PASSWORD
+1234567891:PASSWORD2
+ACCESS_TOKEN_1
+ACCESS_TOKEN_2
+
+JSON is supported too."></textarea>
+            </div>
+            <div class="bulk-file-row">
+                <input type="file" id="bulk-modal-file" accept=".txt,.json,application/json,text/plain" onchange="handleBulkModalFile(this.files[0])">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('bulk-modal-file').click()"><i class="fa-solid fa-file-arrow-up"></i> Choose TXT / JSON</button>
+                <span id="bulk-modal-file-name">No file selected</span>
+            </div>
+            <div class="bulk-format-hint">
+                <span><i class="fa-solid fa-wand-magic-sparkles"></i> UID:PASS and access tokens are detected automatically.</span>
+                <span id="bulk-modal-detect-count">0 accounts detected</span>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeBulkAddModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitBulkAdd()"><i class="fa-solid fa-cloud-arrow-up"></i> Add All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightweight web toast for non-destructive errors/status -->
+    <div class="web-toast" id="web-toast" role="status" aria-live="polite">
+        <div class="web-toast-content">
+            <span class="web-toast-icon"><i class="fa-solid fa-circle-info"></i></span>
+            <span class="web-toast-text"></span>
+        </div>
+        <button type="button" class="web-toast-undo" id="web-toast-undo">Undo</button>
+    </div>
+
+    <script>
+let startTime = Date.now();
+        let serverUptime = 0;
+        let serverUptimeSyncedAt = Date.now();
+        let statsRequestPromise = null;
+
+        const previousExpByUid = new Map();
+        // Keep a newly-added account visible while the backend worker resolves its profile.
+        const pendingAccountAdds = new Map();
+
+        function showExpGain(uid, amount, button) {
+            if (!Number.isFinite(amount) || amount <= 0) return;
+
+            const gainedBox = button?.closest('.account-card')?.querySelector('.exp-item:nth-child(3)');
+            if (gainedBox) {
+                gainedBox.classList.remove('exp-gained-flash');
+                void gainedBox.offsetWidth;
+                gainedBox.classList.add('exp-gained-flash');
+                setTimeout(() => gainedBox.classList.remove('exp-gained-flash'), 950);
+            }
+
+            const rect = button?.getBoundingClientRect();
+            if (!rect) return;
+
+            const fx = document.createElement('div');
+            fx.className = 'exp-fx-layer';
+            fx.textContent = '+' + amount.toLocaleString() + ' EXP';
+            fx.style.left = `${rect.left + rect.width / 2}px`;
+            fx.style.top = `${rect.top - 4}px`;
+            document.body.appendChild(fx);
+            setTimeout(() => fx.remove(), 1250);
+        }
+
+
+        function openAddModal() {
+            document.getElementById('add-modal').classList.add('active');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.remove('active');
+        }
+
+        function openBulkAddModal() {
+            const modal = document.getElementById('bulk-add-modal');
+            modal?.classList.add('active');
+            const input = document.getElementById('bulk-modal-input');
+            if (input) updateBulkDetectCount(input.value || '');
+            setTimeout(() => input?.focus(), 60);
+        }
+
+        function closeBulkAddModal() {
+            document.getElementById('bulk-add-modal')?.classList.remove('active');
+        }
+
+        function toggleFormType() {
+            const type = document.getElementById('acc-type').value;
+            document.getElementById('guest-fields').style.display = type === 'guest' ? 'block' : 'none';
+            document.getElementById('token-fields').style.display = type === 'token' ? 'block' : 'none';
+            document.getElementById('bulk-fields').style.display = type === 'bulk' ? 'block' : 'none';
+            if (type === 'bulk') setBulkTab('paste');
+        }
+
+        function switchToBulkMode() {
+            const select = document.getElementById('acc-type');
+            if (select) { select.value = 'bulk'; toggleFormType(); }
+        }
+
+        function setBulkTab(tab) {
+            document.querySelectorAll('.bulk-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+            const paste = document.getElementById('bulk-paste-panel');
+            const file = document.getElementById('bulk-file-panel');
+            if (paste) paste.style.display = tab === 'paste' ? 'block' : 'none';
+            if (file) file.style.display = tab === 'file' ? 'block' : 'none';
+        }
+
+        function parseBulkInput(raw) {
+            const text = String(raw || '').trim();
+            if (!text) return [];
+            const out = [], seen = new Set();
+            const add = (item) => {
+                if (typeof item === 'string') { addToken(item); return; }
+                if (!item || typeof item !== 'object') return;
+                const uid = item.uid ?? item.UID ?? item.user_id ?? item.userId;
+                const password = item.password ?? item.pass ?? item.secret ?? item.Password;
+                if (uid != null && password != null) {
+                    const u = String(uid).trim(), p = String(password).trim();
+                    if (u && p && /^\d{5,20}$/.test(u)) { const k=`uid:${u}`; if(!seen.has(k)){seen.add(k);out.push({uid:u,password:p});} }
+                    return;
+                }
+                const tokenKeys = ['token','access_token','accessToken','access','jwt','access_token_1','access_token_2','token2','token_2'];
+                for (const key of tokenKeys) if (item[key]) addToken(item[key]);
+                if (Array.isArray(item.tokens)) item.tokens.forEach(addToken);
+                if (Array.isArray(item.access_tokens)) item.access_tokens.forEach(addToken);
+            };
+            const addToken = (value) => {
+                const t = String(value ?? '').trim().replace(/^['"]|['"]$/g,'');
+                if (!t || t.length < 8) return;
+                const k=`token:${t}`; if(!seen.has(k)){seen.add(k);out.push({token:t});}
+            };
+
+            try {
+                const parsed = JSON.parse(text);
+                if (Array.isArray(parsed)) parsed.forEach(add);
+                else if (parsed && Array.isArray(parsed.accounts)) parsed.accounts.forEach(add);
+                else if (parsed && Array.isArray(parsed.data)) parsed.data.forEach(add);
+                else add(parsed);
+                if (out.length) return out;
+            } catch (_) {}
+
+            const tokenLabels = /^(?:access\s*token(?:\s*\d+)?|token(?:\s*\d+)?)\s*[:=]\s*/i;
+            for (const rawLine of text.split(/\r?\n/)) {
+                let line = rawLine.trim();
+                if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+                const pair = line.match(/^(\d{5,20})\s*[:|]\s*(.+)$/);
+                if (pair) { add({uid:pair[1],password:pair[2].trim()}); continue; }
+                line = line.replace(tokenLabels,'').trim();
+                if (line) addToken(line);
+            }
+            return out;
+        }
+
+        function updateBulkDetectCount(raw) {
+            const label = document.getElementById('bulk-detect-count');
+            if (label) { const count=parseBulkInput(raw||'').length; label.textContent=`${count} account${count===1?'':'s'} detected`; }
+            const modalInput=document.getElementById('bulk-modal-input');
+            const modalLabel=document.getElementById('bulk-modal-detect-count');
+            if (modalLabel && modalInput) { const count=parseBulkInput(modalInput.value||'').length; modalLabel.textContent=`${count} account${count===1?'':'s'} detected`; }
+        }
+
+        function handleBulkFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const text = String(reader.result || '');
+                const input = document.getElementById('bulk-account-input');
+                if (input) input.value = text;
+                const name = document.getElementById('bulk-file-name');
+                if (name) name.textContent = `${file.name} loaded`;
+                updateBulkDetectCount(text);
+                setBulkTab('paste');
+            };
+            reader.readAsText(file);
+        }
+
+        function handleBulkModalFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const input = document.getElementById('bulk-modal-input');
+                if (input) input.value = String(reader.result || '');
+                const name = document.getElementById('bulk-modal-file-name');
+                if (name) name.textContent = file.name;
+                updateBulkDetectCount(input?.value || '');
+            };
+            reader.readAsText(file);
+        }
+
+        async function submitBulkAddFromText(raw) {
+            const accounts = parseBulkInput(raw);
+            if (!accounts.length) { showToast('No valid UID:PASS, token, or JSON entries detected.', 'error'); return false; }
+            const res = await fetch('/api/accounts/bulk-add', {method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({accounts})});
+            const data = await res.json().catch(()=>({}));
+            if (!res.ok || data.status !== 'ok') throw new Error(data.error || 'Bulk add failed.');
+            (data.uids||[]).forEach((uid, idx) => {
+                locallyDeletedUids.delete(String(uid));
+                if (idx < 24) {
+                    pendingAccountAdds.set(String(uid), Date.now());
+                    ensureAccountLoadingCard(String(uid));
+                }
+            });
+            showToast(`${data.added || accounts.length} account(s) added successfully.`, 'success');
+            if (data.skipped) showToast(`${data.skipped} duplicate/invalid entry skipped.`, 'info');
+            await fetchStats();
+            return true;
+        }
+
+        async function submitBulkAdd() {
+            const input = document.getElementById('bulk-modal-input');
+            const button = document.querySelector('#bulk-add-modal .btn-primary');
+            if (button) button.disabled = true;
+            try { if (await submitBulkAddFromText(input?.value || '')) { closeBulkAddModal(); if(input) input.value=''; } }
+            catch(e) { showToast(e.message || 'Bulk add failed.', 'error'); }
+            finally { if(button) button.disabled=false; }
+        }
+
+        document.addEventListener('input', (event) => {
+            if (event.target?.id === 'bulk-account-input' || event.target?.id === 'bulk-modal-input') updateBulkDetectCount(event.target.value);
+        });
+
+        async function submitAddAccount(e) {
+            e.preventDefault();
+            const type = document.getElementById('acc-type').value;
+            try {
+                if (type === 'bulk') {
+                    const raw = document.getElementById('bulk-account-input')?.value || '';
+                    if (await submitBulkAddFromText(raw)) { closeAddModal(); document.getElementById('add-acc-form').reset(); toggleFormType(); }
+                    return;
+                }
+                if (type === 'guest') {
+                    const uid = document.getElementById('acc-uid').value.trim();
+                    const password = document.getElementById('acc-password').value.trim();
+                    if (!uid || !password) return showToast('Please enter both UID and Password.', 'error');
+                    const res = await fetch('/api/account/add', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid,password})});
+                    const data = await res.json();
+                    if (data.status !== 'ok') throw new Error(data.error || 'Unknown error');
+                    const addedUid = data.uid ? String(data.uid) : String(uid);
+                    locallyDeletedUids.delete(addedUid);
+                    // If the account is already present/connecting, never create a
+                    // second loading card. Just refresh the existing card.
+                    if (!data.already_exists) {
+                        pendingAccountAdds.set(addedUid, Date.now());
+                        ensureAccountLoadingCard(addedUid);
+                    }
+                    closeAddModal(); document.getElementById('add-acc-form').reset(); toggleFormType();
+                    showToast(data.already_exists ? 'Account is already active.' : 'Account added successfully.', data.already_exists ? 'info' : 'success');
+                    await fetchStats(); return;
+                }
+                const raw = document.getElementById('acc-token').value.trim();
+                if (!raw) return showToast('Please enter a token.', 'error');
+                const tokens = raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+                if (tokens.length > 1) {
+                    await submitBulkAddFromText(raw);
+                } else {
+                    const res = await fetch('/api/account/add', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tokens[0]})});
+                    const data = await res.json();
+                    if (data.status !== 'ok') throw new Error(data.error || 'Unknown error');
+                    showToast('Account added successfully.', 'success'); await fetchStats();
+                }
+                closeAddModal(); document.getElementById('add-acc-form').reset(); toggleFormType();
+            } catch (err) { showToast(err.message || 'Request failed. Please try again.', 'error'); }
+        }
+
+        let pendingDeleteUid = null;
+        let pendingDeleteButton = null;
+        const locallyDeletedUids = new Set();
+
+        function openDeleteDialog(uid, button) {
+            const modal = document.getElementById('delete-modal');
+            const uidEl = document.getElementById('delete-dialog-uid');
+
+            pendingDeleteUid = String(uid);
+            pendingDeleteButton = button || null;
+            uidEl.textContent = String(uid);
+
+            if (!modal) return;
+            modal.classList.remove('closing');
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+            setTimeout(() => document.getElementById('delete-cancel-btn')?.focus(), 60);
+        }
+
+        function closeDeleteDialog(resetState = true) {
+            const modal = document.getElementById('delete-modal');
+            if (!modal) return;
+
+            modal.classList.add('closing');
+            setTimeout(() => {
+                modal.classList.remove('active', 'closing');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+            }, 230);
+
+            if (resetState) {
+                pendingDeleteUid = null;
+                pendingDeleteButton = null;
+            }
+        }
+
+        async function confirmDeleteAccount() {
+            const uid = pendingDeleteUid;
+            const button = pendingDeleteButton;
+            const modal = document.getElementById('delete-modal');
+            const confirmBtn = document.getElementById('delete-confirm-btn');
+
+            if (!uid || !modal) return;
+
+            confirmBtn.classList.add('loading');
+            confirmBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/account/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uid })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.status !== 'error' && data.status !== 'failed') {
+                    locallyDeletedUids.add(String(uid));
+                    const card = button?.closest('.account-card') || document.querySelector(`.account-card[data-uid="${CSS.escape(String(uid))}"]`);
+                    if (card) {
+                        card.classList.remove('new-account', 'live-updated', 'refreshing-card');
+                        card.classList.add('account-exit');
+                        setTimeout(() => card.remove(), 520);
+                    }
+                    closeDeleteDialog();
+                    showUndoToast('Account deleted successfully.', data.removed_account || {uid});
+                    await fetchStats();
+                } else {
+                    console.error('Delete failed:', data);
+                    showToast(data.error || 'Could not remove the account.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Delete request failed. Please try again.', 'error');
+            } finally {
+                confirmBtn.classList.remove('loading');
+                confirmBtn.disabled = false;
+                pendingDeleteUid = null;
+                pendingDeleteButton = null;
+            }
+        }
+
+        async function deleteAccount(uid, button) {
+            openDeleteDialog(uid, button);
+        }
+
+        async function refreshAccountInfo(uid, button) {
+            const card = button?.closest('.account-card');
+
+            if (button) {
+                button.classList.add('refreshing');
+                button.disabled = true;
+            }
+            if (card) {
+                card.classList.add('refreshing-card');
+            }
+
+            const before = previousExpByUid.get(String(uid));
+
+            try {
+                const refreshRes = await fetch('/api/account/refresh', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    cache: 'no-store',
+                    body: JSON.stringify({ uid })
+                });
+                const refreshData = await refreshRes.json().catch(() => ({}));
+                if (!refreshRes.ok || refreshData.status !== 'ok') {
+                    throw new Error(refreshData.error || 'Could not refresh account.');
+                }
+
+                const statsRes = await fetch('/api/stats', { cache: 'no-store' });
+                if (!statsRes.ok) throw new Error(`Stats request failed: ${statsRes.status}`);
+                const data = await statsRes.json();
+                const account = (Array.isArray(data.accounts) ? data.accounts : []).find(acc =>
+                    String(acc.uid) === String(uid) ||
+                    String(acc.display_uid || '') === String(uid) ||
+                    String(acc.actual_uid || '') === String(uid) ||
+                    String(acc.auth_uid || '') === String(uid) ||
+                    String(acc.account_id || '') === String(uid)
+                );
+
+                if (account) {
+                    const current = Number(account.current_exp) || 0;
+                    const old = Number.isFinite(before) ? before : current;
+                    const delta = current - old;
+
+                    previousExpByUid.set(String(uid), current);
+
+                    if (card) {
+                        updateAccountCard(card, account, true);
+                        card.classList.remove('refreshing-card');
+                        card.classList.add('refresh-success');
+                        setTimeout(() => card.classList.remove('refresh-success'), 800);
+                    }
+
+                    await fetchStats();
+
+                    if (delta > 0) showExpGain(uid, delta, button);
+                } else {
+                    await fetchStats();
+                }
+            } catch (err) {
+                console.error(err);
+                if (card) card.classList.remove('refreshing-card');
+            } finally {
+                if (button) {
+                    button.classList.remove('refreshing');
+                    button.disabled = false;
+                }
+            }
+        }
+
+        function formatNumber(value) {
+            const n = Number(value);
+            return Number.isFinite(n) ? n.toLocaleString() : '0';
+        }
+
+        // Free Fire cumulative account EXP thresholds (Level 1-100).
+        // Used only to calculate the exact EXP remaining to the next level.
+        const FF_LEVEL_EXP = [
+            0,48,202,544,1012,1844,2792,3800,4870,6004,7192,8448,9760,11140,12566,14060,15610,17224,18902,20632,22424,24278,26192,28166,30200,32294,34448,37804,41274,44870,48582,53394,58566,64096,69994,76260,83506,91128,99322,108092,120144,133266,147472,162760,179126,196572,215368,235316,257010,279860,304056,348318,394982,444044,495508,549364,633756,721744,813336,908522,1041438,1180352,1325266,1476184,1634300,1840946,2056594,2281242,2514880,2757530,3059506,3372284,3699456,4041030,4397002,4829104,5282204,5756304,6251404,6767502,7381324,8043154,8752982,9510808,10316638,11277190,12291748,13360304,14482858,15659418,17026708,18453990,19941280,21488570,23095858,24763138,26490428,28277708,30124996,32032284
+        ];
+
+        function getLevelExpInfo(level, currentExp) {
+            const lvl = Math.max(1, Math.min(100, Number(level) || 1));
+            const exp = Math.max(0, Number(currentExp) || 0);
+            const currentThreshold = FF_LEVEL_EXP[lvl - 1] ?? 0;
+            const nextThreshold = FF_LEVEL_EXP[lvl] ?? null;
+            if (lvl >= 100 || nextThreshold === null) {
+                return { nextLevel: null, remaining: 0, progress: 100 };
+            }
+            const needed = Math.max(1, nextThreshold - currentThreshold);
+            const intoLevel = Math.max(0, Math.min(needed, exp - currentThreshold));
+            return {
+                nextLevel: lvl + 1,
+                remaining: Math.max(0, nextThreshold - exp),
+                progress: Math.min(100, Math.max(0, (intoLevel / needed) * 100))
+            };
+        }
+
+        function nextExpText(level, currentExp) {
+            const info = getLevelExpInfo(level, currentExp);
+            if (info.nextLevel === null) return 'MAX LEVEL';
+            return `Next Lv ${info.nextLevel} · <strong>${formatNumber(info.remaining)} EXP</strong> left`;
+        }
+
+        function relativeLastMatch(acc) {
+            const at = Number(acc?.last_match_at);
+            if (!Number.isFinite(at) || at <= 0) return acc?.last_match_time ? `Last match: ${acc.last_match_time}` : 'Last match: —';
+            const seconds = Math.max(0, Math.floor(Date.now() / 1000 - at));
+            if (seconds < 10) return 'Last match: just now';
+            if (seconds < 60) return `Last match: ${seconds}s ago`;
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `Last match: ${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            if (hours < 12) return `Last match: ${hours}h ${mins}m ago`;
+            return 'Last match: 12h+ ago';
+        }
+
+        function formatTaskDuration(startedAt, status) {
+            const st = String(status || '').toUpperCase();
+            if (st === 'OFFLINE' || st === 'PAUSED' || st === 'STOPPED' || st === 'EXPIRED') return 'Task time: —';
+            const start = Number(startedAt) || 0;
+            if (start <= 0) return 'Task time: —';
+            const elapsed = Math.max(0, Math.floor(Date.now() / 1000 - start));
+            const days = Math.floor(elapsed / 86400);
+            const hours = Math.floor((elapsed % 86400) / 3600);
+            const minutes = Math.floor((elapsed % 3600) / 60);
+            const seconds = elapsed % 60;
+            if (days > 0) return `Task time: ${days}d ${hours}h ${minutes}m`;
+            if (hours > 0) return `Task time: ${hours}h ${minutes}m`;
+            if (minutes > 0) return `Task time: ${minutes}m ${seconds}s`;
+            return `Task time: ${seconds}s`;
+        }
+
+        function limitStateText(acc) {
+            const limit = Number(acc?.level_limit);
+            if (!Number.isFinite(limit) || limit < 1) return 'No limit';
+            return `Stops at Lv ${limit}`;
+        }
+
+        function expLimitStateText(acc) {
+            const gained = Math.max(0, Number(acc?.daily_exp_gained) || 0);
+            const limit = Math.max(1, Number(acc?.exp_limit) || 1);
+            const reached = Boolean(acc?.exp_limit_reached) || gained >= limit;
+            const compact = n => n >= 1000000 ? `${(n / 1000000).toFixed(n % 1000000 ? 1 : 0)}M` : n >= 1000 ? `${(n / 1000).toFixed(n % 1000 ? 1 : 0)}K` : String(n);
+            if (reached) return `${compact(gained)} / ${compact(limit)} reached`;
+            if (acc?.exp_limit_custom) return `${compact(gained)} / ${compact(limit)} today`;
+            return `${compact(gained)} today`;
+        }
+
+        function formatExpRate(rate) {
+            const n = Number(rate) || 0;
+            if (n >= 1000) return `${formatNumber(Math.round(n))}/min`;
+            if (n >= 1) return `${n.toFixed(1)}/min`;
+            return `${n.toFixed(2)}/min`;
+        }
+
+        function expRateLevel(rate) {
+            const n = Math.max(0, Number(rate) || 0);
+            if (n <= 0) return 0;
+            if (n < 5) return 1;
+            if (n < 15) return 2;
+            if (n < 30) return 3;
+            if (n < 60) return 4;
+            if (n < 100) return 5;
+            return 6;
+        }
+
+        function setRatePulse(card, rate) {
+            const chart = card.querySelector('[data-field="exp_rate_pulse"]');
+            if (!chart) return;
+            const line = chart.querySelector('.live-ratio-line');
+            const area = chart.querySelector('.live-ratio-area');
+            const dot = chart.querySelector('.live-ratio-dot');
+            const scan = chart.querySelector('.live-ratio-scan');
+            const levelBar = card.querySelector('[data-field="exp_rate_level"]');
+            if (!line) return;
+            const n = Math.max(0, Number(rate) || 0);
+            const level = Math.min(1, Math.log1p(n) / Math.log1p(300));
+            const width = 300, base = 30, amp = n <= 0 ? 0.8 : 3 + level * 13;
+            const phase = performance.now() / 850;
+            const points = [];
+            for (let i = 0; i <= 30; i++) {
+                const x = (width / 30) * i, t = i / 30;
+                const envelope = 0.45 + 0.55 * Math.sin(t * Math.PI);
+                const wave = Math.sin(i * 0.62 + phase) * (0.8 + level * 1.8);
+                const wave2 = Math.sin(i * 1.27 - phase * 0.55) * (0.35 + level * 0.9);
+                const y = base - amp * envelope + wave + wave2;
+                points.push(`${x.toFixed(1)},${Math.max(7, Math.min(35, y)).toFixed(1)}`);
+            }
+            line.setAttribute('points', points.join(' '));
+            if (area) area.setAttribute('points', `0,40 ${points.join(' ')} 300,40`);
+            const last = points[points.length - 1].split(',');
+            if (dot) { dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); }
+            if (scan) { scan.setAttribute('x1', Math.max(5, Number(last[0]) - 12)); scan.setAttribute('x2', Math.max(5, Number(last[0]) - 12)); }
+            if (levelBar) levelBar.style.setProperty('--rate-level', `${Math.round(level * 100)}%`);
+        }
+
+        function actionButtonsTemplate(acc) {
+            const uid = escapeHtml(String(acc.uid));
+            const status = String(acc.status || '').toUpperCase();
+            const canStart = status === 'PAUSED' || status === 'EXPIRED' || status === 'STOPPED';
+            const runTitle = canStart ? 'Start Account' : 'Pause Account';
+            const runLabel = canStart ? 'Start' : 'Pause';
+            const runIcon = canStart ? 'fa-play' : 'fa-pause';
+            const runClass = canStart ? 'start-action' : 'pause-action';
+
+            return `
+                <button class="icon-btn refresh-action" title="Refresh Profile / EXP" aria-label="Refresh Profile and EXP" data-uid="${uid}" onclick="refreshAccountInfo('${uid}', this)">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+                <button type="button" class="icon-btn run-toggle-action ${runClass}" title="${runTitle}" aria-label="${runTitle}" data-running="${canStart ? '0' : '1'}" onclick="toggleAccountRun('${uid}', this)">
+                    <i class="fa-solid ${runIcon}"></i>
+                </button>
+                <button class="icon-btn danger" title="Delete Account" aria-label="Delete Account" onclick="deleteAccount('${uid}', this)">
+                    <i class="fa-solid fa-trash"></i>
+                </button>`;
+        }
+
+        async function setLevelLimit(uid, input) {
+            const value = String(input?.value ?? '').trim();
+            if (value && (!/^\d+$/.test(value) || Number(value) < 1 || Number(value) > 100)) {
+                showToast('Level limit must be between 1 and 100.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/api/account/limit', {
+                    method: 'POST', headers: {'Content-Type':'application/json'}, cache:'no-store',
+                    body: JSON.stringify({uid: String(uid), limit: value ? Number(value) : null})
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || data.status !== 'ok') throw new Error(data.error || 'Could not save level limit.');
+                showToast(value ? `Level limit set to ${value}.` : 'Level limit removed.', 'success');
+                await fetchStats();
+            } catch (e) {
+                showToast(e.message || 'Could not save level limit.', 'error');
+            }
+        }
+
+        async function setExpLimit(uid, input) {
+            const value = String(input?.value ?? '').trim();
+            if (value && (!/^\d+$/.test(value) || Number(value) < 1 || Number(value) > 1000000000)) {
+                showToast('EXP limit must be between 1 and 1,000,000,000.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/api/account/exp-limit', {
+                    method:'POST', headers:{'Content-Type':'application/json'}, cache:'no-store',
+                    body: JSON.stringify({uid:String(uid), limit:value ? Number(value) : null})
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || data.status !== 'ok') throw new Error(data.error || 'Could not save EXP limit.');
+                showToast(value ? `Daily EXP limit set to ${Number(value).toLocaleString()}.` : 'Custom EXP limit removed.', 'success');
+                await fetchStats();
+            } catch (e) {
+                showToast(e.message || 'Could not save EXP limit.', 'error');
+            }
+        }
+
+        async function toggleAccountRun(uid, button) {
+            const shouldStart = String(button?.dataset.running || '1') === '0';
+            if (button) {
+                button.disabled = true;
+                button.classList.add('loading');
+            }
+            try {
+                const endpoint = shouldStart ? '/api/account/start' : '/api/account/pause';
+                const actionText = shouldStart ? 'started' : 'paused';
+                const res = await fetch(endpoint, {
+                    method:'POST', headers:{'Content-Type':'application/json'}, cache:'no-store',
+                    body: JSON.stringify({uid:String(uid)})
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || data.status !== 'ok') {
+                    throw new Error(data.error || `Could not ${shouldStart ? 'start' : 'pause'} account.`);
+                }
+                showToast(`Account ${actionText} successfully.`, 'success');
+                await fetchStats();
+            } catch (e) {
+                showToast(e.message || 'Account action failed.', 'error');
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.classList.remove('loading');
+                }
+            }
+        }
+
+        function isAccountResolved(acc) {
+            if (!acc) return false;
+            const uid = String(acc.uid || '');
+            const status = String(acc.status || '').toUpperCase();
+            const nickname = String(acc.nickname || '').trim();
+            // The backend uses CONNECTING / BR_CHECKING and a placeholder nickname while
+            // the login/profile worker is still resolving the account. Keep the skeleton
+            // visible until real profile data arrives.
+            if (status === 'CONNECTING' || status === 'BR_CHECKING' || status === 'LOGIN' || status === 'LOGGING_IN' || status === 'CHECKING') return false;
+            if (!nickname || nickname === `Account ${uid}`) return false;
+            if (Number(acc.level) <= 0 && Number(acc.current_exp) <= 0 && Number(acc.initial_exp) <= 0) return false;
+            return true;
+        }
+
+        function accountLoadingTemplate(uid) {
+            const safeUid = escapeHtml(String(uid));
+            return `
+                <div class="account-loading-card" data-loading-uid="${safeUid}" data-uid="${safeUid}">
+                    <div class="loader-core" aria-hidden="true"></div>
+                    <div class="loader-label">Resolving account <span class="loader-dots"><span></span><span></span><span></span></span></div>
+                    <div class="account-loading-top">
+                        <div class="account-loading-profile">
+                            <div class="skeleton-block skeleton-avatar"></div>
+                            <div>
+                                <div class="skeleton-block skeleton-line long"></div>
+                                <div class="skeleton-block skeleton-line short"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-block skeleton-pill"></div>
+                    </div>
+                    <div class="account-loading-exp">
+                        <div class="skeleton-block skeleton-box"></div>
+                        <div class="skeleton-block skeleton-box"></div>
+                        <div class="skeleton-block skeleton-box"></div>
+                    </div>
+                    <div class="skeleton-block account-loading-bar"></div>
+                    <div class="skeleton-block account-loading-small"></div>
+                    <div class="skeleton-block account-loading-live"></div>
+                    <div class="skeleton-block account-loading-footer"></div>
+                </div>`;
+        }
+
+        function limitReachedReason(acc) {
+            const status = String(acc?.status || '').toUpperCase();
+            if (status !== 'EXPIRED' && status !== 'STOPPED') return '';
+            const expReached = Boolean(acc?.exp_limit_reached || acc?.daily_exp_limit_reached);
+            const levelLimit = Number(acc?.level_limit);
+            const level = Number(acc?.level);
+            if (expReached) return 'Daily EXP Limit';
+            if (Number.isFinite(levelLimit) && levelLimit > 0 && Number.isFinite(level) && level >= levelLimit) return 'Level Limit';
+            return 'Limit Reached';
+        }
+
+        function accountCardTemplate(acc) {
+            const uid = String(acc.uid);
+            const currentExp = Number(acc.current_exp) || 0;
+            const gainedExp = Number(acc.gained_exp) || 0;
+            const statusUpper = String(acc.status || 'ONLINE').toUpperCase();
+            const statusClass = statusUpper === 'IN_MATCH' ? 'status-match' : (statusUpper === 'SEARCHING' ? 'status-searching' : (statusUpper === 'EXPIRED' ? 'status-expired' : (statusUpper === 'OFFLINE' ? 'status-offline' : 'status-online')));
+            const limitReason = limitReachedReason(acc);
+            const expiredCardClass = limitReason ? ' limit-expired-card' : '';
+            const inMatchCardClass = statusUpper === 'IN_MATCH' ? ' in-match' : '';
+            const statusText = statusUpper === 'IN_MATCH'
+                ? 'Match Found'
+                : (statusUpper === 'SEARCHING' ? 'Searching...' : (acc.status || 'ONLINE'));
+            const levelInfo = getLevelExpInfo(acc.level, currentExp);
+            const progress = levelInfo.progress;
+
+            return `
+                <div class="account-card new-account${expiredCardClass}${inMatchCardClass}" data-uid="${escapeHtml(uid)}">
+                    ${limitReason ? `<div class="expired-limit-mark"><i class="fa-solid fa-lock"></i><span>${escapeHtml(limitReason)}</span></div><div class="expired-lock-seal" aria-label="Account locked"><i class="fa-solid fa-lock"></i></div>` : ''}
+                    <div class="acc-top">
+                        <div class="acc-profile">
+                            <div class="acc-avatar"><i class="fa-solid fa-user"></i></div>
+                            <div class="acc-info">
+                                <h4 data-field="nickname">${escapeHtml(acc.nickname)} <span class="region-badge flag-badge" data-field="region" aria-label="${escapeHtml(String(acc.region || 'BD').toUpperCase())}" title="${escapeHtml(String(acc.region || 'BD').toUpperCase())}">${getRegionFlagMarkup(acc.region || 'BD')}</span></h4>
+                                <span data-field="uid"><span data-field="uid_text">UID: ${escapeHtml(uid)}</span><button type="button" class="uid-copy-btn" title="Copy UID" aria-label="Copy UID" data-uid="${escapeHtml(uid)}" onclick="copyUid('${escapeHtml(uid)}', this)"><i class="fa-regular fa-copy"></i></button></span>
+                            </div>
+                        </div>
+                        <div class="acc-status ${statusClass}" data-field="status">
+                            <span class="pulse-dot"></span>
+                            <span>${escapeHtml(statusText)}</span>
+                        </div>
+                    </div>
+
+                    <div class="exp-box">
+                        <div class="exp-item">
+                            <span class="exp-label">Initial EXP</span>
+                            <span class="exp-val" data-field="initial_exp">${formatNumber(acc.initial_exp)}</span>
+                        </div>
+                        <div class="exp-item">
+                            <span class="exp-label">Current EXP</span>
+                            <span class="exp-val" data-field="current_exp">${formatNumber(currentExp)}</span>
+                        </div>
+                        <div class="exp-item">
+                            <span class="exp-label">EXP Gained</span>
+                            <span class="exp-val exp-gained">
+                                <span class="gained-badge" data-field="gained_exp">+${formatNumber(gainedExp)} EXP</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="level-progress">
+                        <div class="level-labels">
+                            <span style="color:var(--accent-cyan)" data-field="level">Level ${escapeHtml(acc.level ?? 0)}</span>
+                            <span style="color:var(--text-muted)" data-field="matches">Matches: ${Number(acc.matches_played) || 0}${Number(acc.active_matches) > 0 ? ` • <span style="color: #00ff88; font-weight: 700; text-shadow: 0 0 8px rgba(0,255,136,0.6);"><i class="fa-solid fa-bolt"></i> ${Number(acc.active_matches)} Active</span>` : ` <span style="color: var(--text-muted); font-size: 11px;">(0 Active)</span>`}</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" data-field="progress" style="width:${progress}%"></div>
+                        </div>
+                        <div class="next-exp-hint" data-field="next_exp">${nextExpText(acc.level, currentExp)}</div>
+                        <div class="level-limit-row">
+                            <span class="limit-caption">Level limit</span>
+                            <input class="level-limit-input" type="number" min="1" max="100" step="1" value="${Number(acc.level_limit) || ''}" placeholder="∞" data-field="level_limit_input" aria-label="Level limit">
+                            <button type="button" class="limit-set-btn" onclick="setLevelLimit('${escapeHtml(uid)}', this.previousElementSibling)">Set</button>
+                            <span class="limit-state" data-field="limit_state">${limitStateText(acc)}</span>
+                        </div>
+                        <div class="exp-limit-row">
+                            <span class="limit-caption">EXP limit</span>
+                            <input class="exp-limit-input" type="number" min="1" max="1000000000" step="1000" value="${acc.exp_limit_custom ? (Number(acc.exp_limit) || '') : ''}" placeholder="∞" data-field="exp_limit_input" aria-label="Daily EXP limit">
+                            <button type="button" class="limit-set-btn" onclick="setExpLimit('${escapeHtml(uid)}', this.previousElementSibling)">Set</button>
+                            <span class="exp-limit-state" data-field="exp_limit_state">${expLimitStateText(acc)}</span>
+                        </div>
+                    </div>
+                    <div class="live-ratio-control">
+                        <button type="button" class="live-ratio-toggle" data-field="exp_rate_toggle" aria-expanded="false" title="Show live ratio">
+                            <span class="live-ratio-title">
+                                <svg class="live-ratio-icon" viewBox="0 0 20 20" aria-hidden="true"><polyline points="2,14 6,10 9,12 13,6 18,8"></polyline></svg>
+                                <span>Live Ratio</span>
+                            </span>
+                            <span class="live-ratio-rate" data-field="exp_rate_text">${formatExpRate(acc.exp_rate_per_min)}</span>
+                            <svg class="live-ratio-chevron" viewBox="0 0 20 20" aria-hidden="true"><polyline points="6,8 10,12 14,8"></polyline></svg>
+                        </button>
+                        <div class="live-ratio-panel" data-field="exp_rate_row" aria-label="Live EXP ratio" hidden>
+                            <div class="live-ratio-chart-wrap">
+                                <div class="live-ratio-live"><i></i>LIVE</div>
+                                <svg class="live-ratio-chart" data-field="exp_rate_pulse" viewBox="0 0 300 42" preserveAspectRatio="none" aria-hidden="true">
+                                    <defs>
+                                        <linearGradient id="liveRatioGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#9aa5ad"></stop><stop offset="52%" stop-color="#eef4f7"></stop><stop offset="100%" stop-color="#ffffff"></stop></linearGradient>
+                                        <linearGradient id="liveRatioAreaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,255,255,.12)"></stop><stop offset="100%" stop-color="rgba(255,255,255,0)"></stop></linearGradient>
+                                        <filter id="liveRatioGlow" x="-20%" y="-80%" width="140%" height="260%"><feGaussianBlur stdDeviation="1.6" result="blur"></feGaussianBlur><feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>
+                                    </defs>
+                                    <line class="live-ratio-grid" x1="0" y1="12" x2="300" y2="12"></line><line class="live-ratio-grid" x1="0" y1="22" x2="300" y2="22"></line><line class="live-ratio-grid" x1="0" y1="32" x2="300" y2="32"></line>
+                                    <polyline class="live-ratio-area" data-field="exp_rate_area" points="0,40 0,31 25,30 50,28 75,29 100,26 125,24 150,25 175,22 200,20 225,21 250,18 275,17 300,16 300,40"></polyline>
+                                    <polyline class="live-ratio-line" points="0,31 25,30 50,28 75,29 100,26 125,24 150,25 175,22 200,20 225,21 250,18 275,17 300,16"></polyline>
+                                    <line class="live-ratio-scan" x1="288" y1="6" x2="288" y2="37"></line><circle class="live-ratio-dot" cx="300" cy="16" r="3"></circle>
+                                </svg>
+                                <div class="live-ratio-level" data-field="exp_rate_level"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="acc-actions">
+                        <div class="acc-runtime">
+                            <span data-field="last_match">${relativeLastMatch(acc)}</span>
+                            <span class="task-runtime" data-field="task_runtime">${formatTaskDuration(acc.task_started_at, acc.status)}</span>
+                        </div>
+                        <div class="action-btns" data-field="actions">${actionButtonsTemplate(acc)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function animateNumber(el, from, to, formatter = formatNumber, duration = 520) {
+            if (!el) return;
+            from = Number(from) || 0; to = Number(to) || 0;
+            if (from === to) { el.textContent = formatter(to); return; }
+            const start = performance.now();
+            el.classList.add('exp-counting');
+            const tick = now => {
+                const p = Math.min(1, (now - start) / duration);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = formatter(from + (to - from) * eased);
+                if (p < 1) requestAnimationFrame(tick);
+                else { el.textContent = formatter(to); el.classList.remove('exp-counting'); }
+            };
+            requestAnimationFrame(tick);
+        }
+
+        function updateAccountCard(card, acc, animate = false) {
+            const currentExp = Number(acc.current_exp) || 0;
+            const gainedExp = Number(acc.gained_exp) || 0;
+            const statusUpper = String(acc.status || 'ONLINE').toUpperCase();
+            const statusClass = statusUpper === 'IN_MATCH' ? 'status-match' : (statusUpper === 'SEARCHING' ? 'status-searching' : (statusUpper === 'EXPIRED' ? 'status-expired' : (statusUpper === 'OFFLINE' ? 'status-offline' : 'status-online')));
+            card.classList.toggle('in-match', statusUpper === 'IN_MATCH');
+            const limitReason = limitReachedReason(acc);
+            card.classList.toggle('limit-expired-card', Boolean(limitReason));
+            let expiredMark = card.querySelector('.expired-limit-mark');
+            if (limitReason) {
+                if (!expiredMark) {
+                    expiredMark = document.createElement('div');
+                    expiredMark.className = 'expired-limit-mark';
+                    expiredMark.innerHTML = '<i class="fa-solid fa-lock"></i><span></span>';
+                    card.prepend(expiredMark);
+                }
+                let lockSeal = card.querySelector('.expired-lock-seal');
+                if (!lockSeal) {
+                    lockSeal = document.createElement('div');
+                    lockSeal.className = 'expired-lock-seal';
+                    lockSeal.setAttribute('aria-label', 'Account locked');
+                    lockSeal.innerHTML = '<i class="fa-solid fa-lock"></i>';
+                    card.appendChild(lockSeal);
+                }
+                const markText = expiredMark.querySelector('span');
+                if (markText) markText.textContent = limitReason;
+            } else {
+                if (expiredMark) expiredMark.remove();
+                const lockSeal = card.querySelector('.expired-lock-seal');
+                if (lockSeal) lockSeal.remove();
+            }
+            const statusText = statusUpper === 'IN_MATCH'
+                ? 'Match Found'
+                : (statusUpper === 'SEARCHING' ? 'Searching...' : (acc.status || 'ONLINE'));
+            const levelInfo = getLevelExpInfo(acc.level, currentExp);
+            const progress = levelInfo.progress;
+
+            card.querySelector('[data-field="nickname"]').childNodes[0].nodeValue = `${acc.nickname || ''} `;
+            const regionEl = card.querySelector('[data-field="region"]');
+            const regionCode = String(acc.region || 'BD').toUpperCase();
+            if (regionEl) {
+                regionEl.classList.add('flag-badge');
+                regionEl.innerHTML = getRegionFlagMarkup(regionCode);
+                regionEl.setAttribute('aria-label', regionCode);
+                regionEl.setAttribute('title', regionCode);
+            }
+            const uidEl = card.querySelector('[data-field="uid"]');
+            const uidTextEl = uidEl?.querySelector('[data-field="uid_text"]');
+            if (uidTextEl) uidTextEl.textContent = `UID: ${acc.uid}`;
+            else if (uidEl) uidEl.textContent = `UID: ${acc.uid}`;
+            const uidCopyBtn = uidEl?.querySelector('.uid-copy-btn');
+            if (uidCopyBtn) uidCopyBtn.dataset.uid = String(acc.uid);
+            const initialEl = card.querySelector('[data-field="initial_exp"]');
+            const currentEl = card.querySelector('[data-field="current_exp"]');
+            const gainedEl = card.querySelector('[data-field="gained_exp"]');
+            const oldCurrent = Number(card.dataset.currentExp);
+            const oldGained = Number(card.dataset.gainedExp);
+            initialEl.textContent = formatNumber(acc.initial_exp);
+            if (animate && Number.isFinite(oldCurrent)) animateNumber(currentEl, oldCurrent, currentExp);
+            else currentEl.textContent = formatNumber(currentExp);
+            if (animate && Number.isFinite(oldGained)) animateNumber(gainedEl, oldGained, gainedExp, v => `+${formatNumber(v)} EXP`);
+            else gainedEl.textContent = `+${formatNumber(gainedExp)} EXP`;
+            const liveRate = Number(acc.exp_rate_per_min) || 0;
+            card.dataset.expRate = String(liveRate);
+            setRatePulse(card, liveRate);
+            const rateText = card.querySelector('[data-field="exp_rate_text"]');
+            if (rateText) rateText.textContent = formatExpRate(liveRate);
+            card.dataset.currentExp = String(currentExp);
+            card.dataset.gainedExp = String(gainedExp);
+            card.dataset.lastMatchAt = String(Number(acc.last_match_at) || 0);
+            card.querySelector('[data-field="level"]').textContent = `Level ${acc.level ?? 0}`;
+            const activeMatches = Number(acc.active_matches) || 0;
+            const completedMatches = Number(acc.matches_played) || 0;
+            const matchesEl = card.querySelector('[data-field="matches"]');
+            if (matchesEl) {
+                matchesEl.innerHTML = `Matches: ${completedMatches} ${activeMatches > 0 ? `• <span style="color: #00ff88; font-weight: 700; text-shadow: 0 0 8px rgba(0,255,136,0.6);"><i class="fa-solid fa-bolt"></i> ${activeMatches} Active</span>` : `<span style="color: var(--text-muted); font-size: 11px;">(0 Active)</span>`}`;
+            }
+            card.querySelector('[data-field="progress"]').style.width = `${progress}%`;
+            const nextExpEl = card.querySelector('[data-field="next_exp"]');
+            if (nextExpEl) { nextExpEl.classList.add('updating'); nextExpEl.innerHTML = nextExpText(acc.level, currentExp); setTimeout(() => nextExpEl.classList.remove('updating'), 220); }
+            card.querySelector('[data-field="last_match"]').textContent = relativeLastMatch(acc);
+            const taskRuntimeEl = card.querySelector('[data-field="task_runtime"]');
+            if (taskRuntimeEl) {
+                card.dataset.status = acc.status || '';
+                taskRuntimeEl.textContent = formatTaskDuration(acc.task_started_at, acc.status);
+                card.dataset.taskStartedAt = String(Number(acc.task_started_at) || 0);
+            }
+            const limitInput = card.querySelector('[data-field="level_limit_input"]');
+            if (limitInput && document.activeElement !== limitInput) limitInput.value = Number(acc.level_limit) || '';
+            const limitState = card.querySelector('[data-field="limit_state"]');
+            if (limitState) limitState.textContent = limitStateText(acc);
+            const expLimitInput = card.querySelector('[data-field="exp_limit_input"]');
+            if (expLimitInput && document.activeElement !== expLimitInput) expLimitInput.value = acc.exp_limit_custom ? (Number(acc.exp_limit) || '') : '';
+            const expLimitState = card.querySelector('[data-field="exp_limit_state"]');
+            if (expLimitState) {
+                expLimitState.textContent = expLimitStateText(acc);
+                expLimitState.classList.toggle('exp-limit-reached', Boolean(acc.exp_limit_reached));
+            }
+            const actions = card.querySelector('[data-field="actions"]');
+            if (actions) actions.innerHTML = actionButtonsTemplate(acc);
+
+            const status = card.querySelector('[data-field="status"]');
+            status.className = `acc-status ${statusClass}`;
+            status.innerHTML = `<span class="pulse-dot"></span><span>${escapeHtml(statusText)}</span>`;
+
+            const refreshBtn = card.querySelector('.refresh-action');
+            const deleteBtn = card.querySelector('.danger');
+            if (refreshBtn) refreshBtn.dataset.uid = String(acc.uid);
+            if (deleteBtn) deleteBtn.setAttribute('onclick', `deleteAccount('${String(acc.uid)}', this)`);
+
+            if (animate) {
+                card.classList.remove('live-updated');
+                void card.offsetWidth;
+                card.classList.add('live-updated');
+                setTimeout(() => card.classList.remove('live-updated'), 450);
+            }
+        }
+
+        function ensureAccountLoadingCard(uid) {
+            const container = document.getElementById('accounts-container');
+            if (!container) return;
+            const key = String(uid);
+            const existing = container.querySelector(`.account-loading-card[data-loading-uid="${CSS.escape(key)}"]`);
+            if (existing) return;
+            const empty = container.querySelector('.empty-state');
+            if (empty) empty.remove();
+            container.insertAdjacentHTML('beforeend', accountLoadingTemplate(key));
+        }
+
+        function syncAccounts(accounts) {
+            const container = document.getElementById('accounts-container');
+            if (!container) return;
+
+            // Loading placeholders are deliberately not treated as account cards.
+            // This prevents the temporary CONNECTING/BR_CHECKING object from becoming
+            // a visible duplicate card.
+            // Purge duplicate DOM cards first (covers cards left by an older poll).
+            const domSeen = new Set();
+            [...container.querySelectorAll('.account-card[data-uid]')].forEach(card => {
+                const key = String(card.dataset.displayUid || card.dataset.uid || '').trim();
+                if (!key) return;
+                if (domSeen.has(key)) card.remove();
+                else domSeen.add(key);
+            });
+            const existing = new Map(
+                [...container.querySelectorAll('.account-card[data-uid]')]
+                    .map(card => [String(card.dataset.displayUid || card.dataset.uid), card])
+            );
+            const loadingCards = new Map(
+                [...container.querySelectorAll('.account-loading-card[data-loading-uid]')]
+                    .map(card => [String(card.dataset.loadingUid), card])
+            );
+            const resolvedAccounts = [];
+            const seenCanonical = new Set();
+            for (const rawAcc of accounts.filter(isAccountResolved)) {
+                const acc = {...rawAcc};
+                // The same account can exist under auth UID, real account_id and
+                // display UID. The dashboard must render exactly one visible card.
+                const canonical = String(acc.display_uid || acc.actual_uid || acc.account_id || acc.uid || acc.auth_uid || '').trim();
+                if (!canonical || seenCanonical.has(canonical)) continue;
+                seenCanonical.add(canonical);
+                // Use the visible/display UID as the DOM key so two backend aliases
+                // cannot create two cards showing the same UID.
+                acc.uid = canonical;
+                resolvedAccounts.push(acc);
+            }
+            const incoming = new Set(resolvedAccounts.map(acc => String(acc.uid)));
+            locallyDeletedUids.forEach(uid => incoming.delete(uid));
+
+            // A resolved account may have a different game UID than the UID used
+            // to start the login. Treat every known identity as the same account
+            // so the old loading skeleton cannot remain beside the real card.
+            const resolvedAliases = new Set();
+            for (const acc of resolvedAccounts) {
+                for (const value of [acc.uid, acc.auth_uid, acc.actual_uid, acc.account_id, acc.display_uid]) {
+                    const key = String(value || '').trim();
+                    if (key) resolvedAliases.add(key);
+                }
+            }
+
+            const now = Date.now();
+            for (const [uid, startedAt] of pendingAccountAdds) {
+                if (resolvedAliases.has(String(uid))) {
+                    pendingAccountAdds.delete(uid);
+                    const loading = loadingCards.get(uid);
+                    if (loading) loading.remove();
+                    continue;
+                }
+                if (now - startedAt < 30000 && !incoming.has(uid)) {
+                    ensureAccountLoadingCard(uid);
+                } else if (incoming.has(uid)) {
+                    pendingAccountAdds.delete(uid);
+                } else if (now - startedAt >= 30000) {
+                    pendingAccountAdds.delete(uid);
+                    const loading = loadingCards.get(uid);
+                    if (loading) {
+                        loading.classList.add('account-exit');
+                        setTimeout(() => {
+                            if (loading.classList.contains('account-exit')) loading.remove();
+                        }, 520);
+                    }
+                }
+            }
+
+            // Remove stale real cards. Loading cards remain untouched until the profile
+            // actually resolves or the pending timeout expires.
+            existing.forEach((card, uid) => {
+                if (!incoming.has(uid)) {
+                    card.classList.add('account-exit');
+                    setTimeout(() => {
+                        if (card.classList.contains('account-exit')) card.remove();
+                    }, 460);
+                }
+            });
+
+            resolvedAccounts.forEach((acc) => {
+                const uid = String(acc.uid);
+                for (const alias of [acc.uid, acc.auth_uid, acc.actual_uid, acc.account_id, acc.display_uid]) {
+                    const aliasKey = String(alias || '').trim();
+                    if (!aliasKey) continue;
+                    const aliasLoading = loadingCards.get(aliasKey);
+                    if (aliasLoading && aliasKey !== uid) {
+                        aliasLoading.classList.add('account-exit');
+                        setTimeout(() => {
+                            if (aliasLoading.classList.contains('account-exit')) aliasLoading.remove();
+                        }, 220);
+                    }
+                    pendingAccountAdds.delete(aliasKey);
+                }
+                if (locallyDeletedUids.has(uid)) return;
+                let card = existing.get(uid);
+                let loading = loadingCards.get(uid);
+
+                // A login worker can briefly return the resolved profile under a
+                // normalized/different UID key. If this account belongs to a pending
+                // add and no exact loading UID exists, consume the oldest matching
+                // pending skeleton instead of leaving it behind as a duplicate card.
+                if (!loading && pendingAccountAdds.has(uid)) {
+                    loading = loadingCards.get(uid);
+                }
+                if (!loading && pendingAccountAdds.size > 0 && loadingCards.size > 0) {
+                    const pendingEntries = [...pendingAccountAdds.entries()]
+                        .sort((a, b) => a[1] - b[1]);
+                    const fallback = pendingEntries.find(([pendingUid]) => loadingCards.has(pendingUid));
+                    if (fallback) loading = loadingCards.get(fallback[0]);
+                }
+
+                if (loading) {
+                    const html = accountCardTemplate(acc);
+                    loading.outerHTML = html;
+                    card = container.querySelector(`.account-card[data-uid="${CSS.escape(uid)}"]`);
+                    pendingAccountAdds.delete(uid);
+                    if (card) {
+                        card.classList.remove('account-exit');
+                        card.dataset.displayUid = String(acc.display_uid || acc.uid);
+                        updateAccountCard(card, acc, false);
+                        previousExpByUid.set(uid, Number(acc.current_exp) || 0);
+                        setTimeout(() => card.classList.remove('new-account'), 520);
+                    }
+                    return;
+                }
+
+                if (!card) {
+                    container.insertAdjacentHTML('beforeend', accountCardTemplate(acc));
+                    card = container.querySelector(`.account-card[data-uid="${CSS.escape(uid)}"]`);
+                    if (card) {
+                        card.dataset.displayUid = String(acc.display_uid || acc.uid);
+                        updateAccountCard(card, acc, false);
+                        previousExpByUid.set(uid, Number(acc.current_exp) || 0);
+                        setTimeout(() => card.classList.remove('new-account'), 520);
+                    }
+                } else {
+                    card.classList.remove('account-exit');
+                    card.dataset.displayUid = String(acc.display_uid || acc.uid);
+                    updateAccountCard(card, acc, true);
+                    previousExpByUid.set(uid, Number(acc.current_exp) || 0);
+                    const staleLoading = loadingCards.get(uid);
+                    if (staleLoading) {
+                        staleLoading.classList.add('account-exit');
+                        setTimeout(() => staleLoading.remove(), 460);
+                    }
+                    pendingAccountAdds.delete(uid);
+                }
+            });
+
+            const empty = container.querySelector('.empty-state');
+            const hasAccountCards = container.querySelectorAll('.account-card[data-uid]').length > 0;
+            const hasLoadingCards = container.querySelectorAll('.account-loading-card[data-loading-uid]').length > 0;
+            if (resolvedAccounts.length === 0 && !hasAccountCards && !hasLoadingCards && pendingAccountAdds.size === 0) {
+                if (!empty) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-ghost"></i>
+                            <p>No active accounts running. Click "+ Add Account" to start!</p>
+                        </div>
+                    `;
+                }
+            } else if (empty) {
+                empty.remove();
+            }
+        }
+
+
+
+        function getGlobalLimitCards() {
+            return [...document.querySelectorAll('.account-card[data-uid]')]
+                .filter(card => String(card.dataset.uid || '').trim());
+        }
+
+        function openGlobalLimits() {
+            const modal = document.getElementById('global-limits-modal');
+            if (!modal) return;
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+            const level = document.getElementById('global-level-limit');
+            const exp = document.getElementById('global-exp-limit');
+            if (level) level.value = '';
+            if (exp) exp.value = '';
+            const progress = document.getElementById('global-limits-progress');
+            const count = getGlobalLimitCards().length;
+            if (progress) progress.textContent = count
+                ? `Ready to apply to ${count} account${count === 1 ? '' : 's'} currently loaded. Leave a field empty to remove that custom limit.`
+                : 'No account cards are loaded yet. Wait for accounts to appear, then reopen this panel.';
+            window.setTimeout(() => level?.focus({preventScroll:true}), 80);
+        }
+
+        function closeGlobalLimits() {
+            const modal = document.getElementById('global-limits-modal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+        }
+
+        async function applyGlobalLimits() {
+            const levelRaw = String(document.getElementById('global-level-limit')?.value ?? '').trim();
+            const expRaw = String(document.getElementById('global-exp-limit')?.value ?? '').trim();
+
+            if (levelRaw && (!/^\d+$/.test(levelRaw) || Number(levelRaw) < 1 || Number(levelRaw) > 100)) {
+                document.getElementById('global-level-limit')?.focus();
+                return showToast('Level limit must be a whole number from 1 to 100.', 'error');
+            }
+            if (expRaw && (!/^\d+$/.test(expRaw) || Number(expRaw) < 1 || Number(expRaw) > 1000000000)) {
+                document.getElementById('global-exp-limit')?.focus();
+                return showToast('Daily EXP limit must be a whole number from 1 to 1,000,000,000.', 'error');
+            }
+            const cards = getGlobalLimitCards();
+            if (!cards.length) return showToast('No account cards are currently loaded. Refresh the dashboard and try again.', 'error');
+
+            const button = document.getElementById('global-limits-apply');
+            const progress = document.getElementById('global-limits-progress');
+            if (button) {
+                button.disabled = true;
+                button.classList.add('loading');
+                button.innerHTML = '<i class="fa-solid fa-spinner"></i> Applying…';
+            }
+
+            let success = 0, failed = 0, completed = 0;
+            const errors = [];
+            const updateOne = async (card) => {
+                const uid = String(card.dataset.uid || '').trim();
+                if (!uid) throw new Error('Account card has no UID');
+                const tasks = [
+                    {label:'Level', url:'/api/account/limit', body:{uid, limit:levelRaw === '' ? null : Number(levelRaw)}},
+                    {label:'EXP', url:'/api/account/exp-limit', body:{uid, limit:expRaw === '' ? null : Number(expRaw)}}
+                ];
+                const failures = [];
+                for (const task of tasks) {
+                    let lastError;
+                    for (let attempt = 0; attempt < 2; attempt++) {
+                        try {
+                            const response = await fetch(task.url, {method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify(task.body)});
+                            const data = await response.json().catch(() => ({}));
+                            if (!response.ok || data.status !== 'ok') throw new Error(data.error || `${task.label} limit request failed (${response.status})`);
+                            lastError = null; break;
+                        } catch (error) { lastError = error; if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 250)); }
+                    }
+                    if (lastError) failures.push(`${task.label}: ${lastError.message || 'request failed'}`);
+                }
+                if (failures.length) throw new Error(failures.join('; '));
+                return uid;
+            };
+            try {
+                if (progress) progress.textContent = `Applying limits to ${cards.length} accounts…`;
+                // Small worker pool keeps the dashboard responsive while processing large lists.
+                let cursor = 0;
+                const workers = Array.from({length:Math.min(5, cards.length)}, async () => {
+                    while (cursor < cards.length) {
+                        const index = cursor++;
+                        const card = cards[index];
+                        const uid = String(card.dataset.uid || '').trim() || `Account ${index + 1}`;
+                        try { await updateOne(card); success++; }
+                        catch (error) { failed++; errors.push(`${uid}: ${error.message || 'request failed'}`); }
+                        completed++;
+                        if (progress) progress.textContent = `Applying limits… ${completed}/${cards.length} · ${success} succeeded · ${failed} failed`;
+                    }
+                });
+                await Promise.all(workers);
+                try { await fetchStats(); } catch (_) {}
+                if (progress) progress.textContent = `Finished: ${success} account${success === 1 ? '' : 's'} updated; ${failed} failed.`;
+                if (failed) {
+                    showToast(`One-shot limits: ${success} updated, ${failed} failed. See console for details and retry failed accounts.`, 'error');
+                } else {
+                    showToast(`Limits applied successfully to ${success} account${success === 1 ? '' : 's'}.`, 'success');
+                    window.setTimeout(closeGlobalLimits, 450);
+                }
+                if (errors.length) console.warn('[One-shot Limits] Failed accounts:', errors);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.classList.remove('loading');
+                    button.innerHTML = '<i class="fa-solid fa-check"></i> Apply to All';
+                }
+            }
+        }
+
+        // ===== Command Center =====
+        let ccAction = null;
+        let ccGlobalPaused = false;
+        function toggleCommandCenterCollapse(force) {
+            const panel = document.getElementById('command-center');
+            const button = document.getElementById('cc-collapse-btn');
+            if (!panel || !button) return;
+            const collapsed = typeof force === 'boolean' ? force : !panel.classList.contains('is-collapsed');
+            panel.classList.toggle('is-collapsed', collapsed);
+            button.setAttribute('aria-expanded', String(!collapsed));
+            button.title = collapsed ? 'Show Command Center and action buttons' : 'Hide Command Center action buttons';
+            try { localStorage.setItem('jxe-command-center-collapsed', collapsed ? '1' : '0'); } catch (_) {}
+        }
+        (function restoreCommandCenterState() {
+            try { if (localStorage.getItem('jxe-command-center-collapsed') === '1') toggleCommandCenterCollapse(true); } catch (_) {}
+        })();
+        function updateCommandCenter(data) {
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = formatNumber(v || 0); };
+            set('cc-running', data.running_accounts); set('cc-paused', data.paused_accounts); set('cc-total', data.total_accounts);
+            ccGlobalPaused = Boolean(data.global_paused) || (data.total_accounts > 0 && data.paused_accounts === data.total_accounts);
+            const btn = document.getElementById('cc-toggle-btn');
+            if (btn && !btn.disabled) {
+                btn.className = 'cc-btn ' + (ccGlobalPaused ? 'start' : 'pause');
+                btn.innerHTML = ccGlobalPaused ? '<i class="fa-solid fa-play"></i> <span>Start All</span>' : '<i class="fa-solid fa-pause"></i> <span>Pause All</span>';
+            }
+        }
+        async function postSystem(path, body = {}) {
+            const res = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, cache:'no-store', body:JSON.stringify(body)});
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.status !== 'ok') throw new Error(data.error || 'Action failed.');
+            return data;
+        }
+        async function toggleAllRun(btn) {
+            const starting = ccGlobalPaused;
+            btn.disabled = true; btn.classList.add('loading');
+            try {
+                const d = await postSystem(starting ? '/api/system/start-all' : '/api/system/pause-all');
+                showToast(starting ? `Starting ${d.count} accounts.` : `${d.count} accounts paused.`, 'success');
+            } catch (e) { showToast(e.message, 'error'); }
+            finally { btn.disabled = false; btn.classList.remove('loading'); await fetchStats(); }
+        }
+        function openSysConfirm(action) {
+            ccAction = action;
+            const isDel = action === 'delete';
+            document.getElementById('cc-confirm-title').innerHTML = isDel
+                ? '<i class="fa-solid fa-triangle-exclamation" style="color:var(--red)"></i> Delete all accounts?'
+                : '<i class="fa-solid fa-arrows-rotate" style="color:var(--accent-cyan)"></i> Refresh whole system?';
+            document.getElementById('cc-confirm-text').textContent = isDel
+                ? 'Every account will be stopped and removed permanently. This cannot be undone.'
+                : 'All sessions will stop, stats and logs reset, and every saved account will start fresh.';
+            const input = document.getElementById('cc-confirm-input');
+            input.value = ''; input.style.display = isDel ? 'block' : 'none';
+            document.getElementById('cc-confirm').classList.add('active');
+            if (isDel) setTimeout(() => input.focus(), 60);
+        }
+        function closeSysConfirm() { document.getElementById('cc-confirm').classList.remove('active'); ccAction = null; }
+        async function runSysAction() {
+            const go = document.getElementById('cc-confirm-go');
+            const action = ccAction;
+            if (action === 'delete' && document.getElementById('cc-confirm-input').value.trim().toUpperCase() !== 'DELETE') {
+                showToast('Type DELETE to confirm.', 'error'); return;
+            }
+            go.disabled = true;
+            try {
+                if (action === 'delete') {
+                    const d = await postSystem('/api/system/delete-all', {confirm:'DELETE'});
+                    showToast(`${d.count} accounts deleted.`, 'success');
+                } else {
+                    const d = await postSystem('/api/system/refresh');
+                    showToast(`System refreshed — ${d.count} accounts restarting.`, 'success');
+                }
+                closeSysConfirm();
+                setTimeout(() => window.location.reload(), 700);
+            } catch (e) { showToast(e.message, 'error'); }
+            finally { go.disabled = false; }
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeSysConfirm();
+            if (e.key === 'Enter' && document.getElementById('cc-confirm')?.classList.contains('active')) runSysAction();
+        });
+
+        async function manualRefresh() {
+            const btn = document.getElementById('header-refresh-btn');
+            const icon = btn?.querySelector('i');
+            if (btn) btn.disabled = true;
+            
+            try {
+                await fetchStats();
+                showToast('Dashboard refreshed smoothly.', 'success');
+            } catch (error) {
+                showToast(error?.message || 'Dashboard refresh failed. Please try again.', 'error');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // Lightweight client-side timers: no API call is needed for elapsed task time.
+        setInterval(() => {
+            document.querySelectorAll('.account-card[data-uid]').forEach(card => {
+                const lastMatch = card.querySelector('[data-field="last_match"]');
+                const uid = card.dataset.uid;
+                if (lastMatch && card.dataset.lastMatchAt) {
+                    lastMatch.textContent = relativeLastMatch({
+                        last_match_at: Number(card.dataset.lastMatchAt),
+                        last_match_time: lastMatch.textContent.replace(/^Last match:\s*/, '')
+                    });
+                }
+                const runtime = card.querySelector('[data-field="task_runtime"]');
+                const cardStatus = card.dataset.status || '';
+                if (runtime) runtime.textContent = formatTaskDuration(Number(card.dataset.taskStartedAt) || 0, cardStatus);
+            });
+        }, 1000);
+
+        async function fetchStats() {
+            if (statsRequestPromise) return statsRequestPromise;
+            statsRequestPromise = (async () => {
+                const container = document.getElementById('accounts-container');
+                container?.classList.add('is-polling');
+                try {
+                    const res = await fetch('/api/stats', { cache: 'no-store' });
+                    if (!res.ok) throw new Error(`Stats request failed: ${res.status}`);
+                    const data = await res.json();
+
+                    serverUptime = Math.max(0, Number(data.uptime) || 0);
+                    serverUptimeSyncedAt = Date.now();
+                    document.getElementById('stat-total-accounts').innerText = Number(data.total_accounts) || 0;
+                    document.getElementById('stat-total-exp').innerText = '+' + Number(data.total_gained_exp || 0).toLocaleString() + ' EXP';
+                    document.getElementById('stat-total-matches').innerText = Number(data.total_matches) || 0;
+
+                    updateCommandCenter(data);
+                    syncAccounts(Array.isArray(data.accounts) ? data.accounts : []);
+                } catch (err) {
+                    console.error('Failed to fetch stats:', err);
+                } finally {
+                    setTimeout(() => container?.classList.remove('is-polling'), 180);
+                }
+            })();
+            try {
+                return await statsRequestPromise;
+            } finally {
+                statsRequestPromise = null;
+            }
+        }
+
+
+        async function copyUid(uid, button) {
+            const value = String(uid || '').trim();
+            if (!value) return;
+            const icon = button?.querySelector('i');
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(value);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = value;
+                    ta.setAttribute('readonly', '');
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    ta.remove();
+                }
+                if (icon) {
+                    icon.className = 'fa-solid fa-check';
+                    setTimeout(() => { icon.className = 'fa-regular fa-copy'; }, 900);
+                }
+                showToast('UID copied.', 'success');
+            } catch (err) {
+                console.error('UID copy failed:', err);
+                showToast('Could not copy UID.', 'error');
+            }
+        }
+
+        function getRegionFlagMarkup(region) {
+            const rawCode = String(region || 'BD').trim().toUpperCase();
+            // Normalize common API/server aliases so every supported region gets a real flag.
+            const aliases = {
+                BANGLADESH: 'BD', BD: 'BD', INDIA: 'IND', IN: 'IND', IND: 'IND',
+                BRAZIL: 'BR', BR: 'BR', USA: 'US', UNITEDSTATES: 'US', NORTHAMERICA: 'US', NA: 'US', US: 'US',
+                PAKISTAN: 'PK', PK: 'PK', SINGAPORE: 'SG', SG: 'SG',
+                MIDDLEEAST: 'ME', MENA: 'ME', ME: 'ME', THAILAND: 'TH', TH: 'TH',
+                VIETNAM: 'VN', VN: 'VN', INDONESIA: 'ID', ID: 'ID', TAIWAN: 'TW', TW: 'TW',
+                RUSSIA: 'RU', RU: 'RU', EUROPE: 'EU', EU: 'EU',
+                SAC: 'BR', LAN: 'BR', LATAM: 'BR', LATINAMERICA: 'BR', SEA: 'SG'
+            };
+            const compactCode = rawCode.replace(/[\s_-]+/g, '');
+            const code = aliases[compactCode] || compactCode;
+            // Inline SVG flags avoid missing-emoji-glyph boxes on Android/mobile fonts.
+            const flags = {
+                BD: '<rect width="60" height="40" fill="#006a4e"/><circle cx="27" cy="20" r="12" fill="#f42a41"/>',
+                IND: '<rect width="60" height="13.34" fill="#ff9933"/><rect y="13.33" width="60" height="13.34" fill="#fff"/><rect y="26.66" width="60" height="13.34" fill="#138808"/><circle cx="30" cy="20" r="5.2" fill="none" stroke="#000080" stroke-width="1.3"/><circle cx="30" cy="20" r="1" fill="#000080"/>',
+                BR: '<rect width="60" height="40" fill="#009b3a"/><path d="M30 5 L53 20 30 35 7 20Z" fill="#ffdf00"/><circle cx="30" cy="20" r="9" fill="#002776"/>',
+                US: '<rect width="60" height="40" fill="#fff"/><path d="M0 0h60v3.1H0zm0 6.2h60v3.1H0zm0 6.2h60v3.1H0zm0 6.2h60v3.1H0zm0 6.2h60v3.1H0zm0 6.2h60v3.1H0z" fill="#b22234"/><rect width="26" height="21.5" fill="#3c3b6e"/>',
+                PK: '<rect width="60" height="40" fill="#01411c"/><rect width="13" height="40" fill="#fff"/><circle cx="34" cy="19" r="10" fill="#fff"/><circle cx="38" cy="16" r="8" fill="#01411c"/><path d="M44 6l1.7 4.3 4.6.2-3.6 2.8 1.3 4.4-4-2.5-3.8 2.5 1.2-4.4-3.6-2.8 4.6-.2z" fill="#fff"/>',
+                SG: '<rect width="60" height="20" fill="#ef3340"/><rect y="20" width="60" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#fff"/><circle cx="18" cy="8" r="5" fill="#ef3340"/>',
+                ME: '<rect width="60" height="40" fill="#006c35"/><rect x="0" y="28" width="60" height="3" fill="#fff"/><rect x="12" y="10" width="36" height="3" rx="1" fill="#fff"/>', MENA: '<rect width="60" height="40" fill="#006c35"/><rect x="0" y="28" width="60" height="3" fill="#fff"/><rect x="12" y="10" width="36" height="3" rx="1" fill="#fff"/>',
+                TH: '<rect width="60" height="40" fill="#ed1c24"/><rect y="6.5" width="60" height="27" fill="#fff"/><rect y="13" width="60" height="14" fill="#241d4f"/>',
+                VN: '<rect width="60" height="40" fill="#da251d"/><path d="M30 7l3.2 9.5h10l-8.1 5.8 3.1 9.5-8.2-5.9-8.2 5.9 3.1-9.5-8.1-5.8h10z" fill="#ff0"/>',
+                ID: '<rect width="60" height="20" fill="#ce1126"/><rect y="20" width="60" height="20" fill="#fff"/>',
+                TW: '<rect width="60" height="40" fill="#fe0000"/><rect width="26" height="22" fill="#000095"/><circle cx="13" cy="11" r="6" fill="#fff"/>',
+                RU: '<rect width="60" height="13.34" fill="#fff"/><rect y="13.33" width="60" height="13.34" fill="#0039a6"/><rect y="26.66" width="60" height="13.34" fill="#d52b1e"/>',
+                EU: '<rect width="60" height="40" fill="#003399"/><g fill="#ffcc00"><circle cx="30" cy="7" r="1.7"/><circle cx="37" cy="9" r="1.7"/><circle cx="42" cy="15" r="1.7"/><circle cx="42" cy="24" r="1.7"/><circle cx="36" cy="30" r="1.7"/><circle cx="30" cy="33" r="1.7"/><circle cx="23" cy="30" r="1.7"/><circle cx="18" cy="24" r="1.7"/><circle cx="18" cy="15" r="1.7"/><circle cx="23" cy="9" r="1.7"/></g>',
+                SAC: '<rect width="60" height="40" fill="#009b3a"/><path d="M30 5 L53 20 30 35 7 20Z" fill="#ffdf00"/><circle cx="30" cy="20" r="9" fill="#002776"/>',
+                LAN: '<rect width="60" height="40" fill="#009b3a"/><path d="M30 5 L53 20 30 35 7 20Z" fill="#ffdf00"/><circle cx="30" cy="20" r="9" fill="#002776"/>'
+            };
+            const svg = flags[code] || '<rect width="60" height="40" fill="#555"/><path d="M0 0L60 40M60 0L0 40" stroke="#ddd" stroke-width="4"/>';
+            return `<span class="flag-emoji" role="img" aria-label="${code} flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${svg}</svg></span>`;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+
+        document.getElementById('delete-cancel-btn').addEventListener('click', () => closeDeleteDialog());
+        document.getElementById('delete-confirm-btn').addEventListener('click', confirmDeleteAccount);
+        document.getElementById('delete-modal').addEventListener('click', (event) => {
+            if (event.target === event.currentTarget) closeDeleteDialog();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && document.getElementById('delete-modal').classList.contains('active')) {
+                closeDeleteDialog();
+            }
+        });
+
+        let toastTimer = null;
+        let undoAccountBackup = null;
+        let undoTimer = null;
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('web-toast');
+            if (!toast) return;
+            const icon = toast.querySelector('.web-toast-icon i');
+            const undo = document.getElementById('web-toast-undo');
+            toast.querySelector('.web-toast-text').textContent = message;
+            toast.className = `web-toast ${type}`;
+            if (undo) undo.style.display = 'none';
+            icon.className = type === 'error' ? 'fa-solid fa-circle-exclamation' : type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-info';
+            requestAnimationFrame(() => toast.classList.add('show'));
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function showUndoToast(message, account) {
+            const toast = document.getElementById('web-toast');
+            const undo = document.getElementById('web-toast-undo');
+            if (!toast || !undo) return showToast(message, 'success');
+            undoAccountBackup = account ? { ...account } : null;
+            clearTimeout(toastTimer);
+            clearTimeout(undoTimer);
+            toast.querySelector('.web-toast-text').textContent = message;
+            toast.className = 'web-toast success undo-mode';
+            toast.querySelector('.web-toast-icon i').className = 'fa-solid fa-circle-check';
+            undo.style.display = 'inline-flex';
+            requestAnimationFrame(() => toast.classList.add('show'));
+            undoTimer = setTimeout(() => { undoAccountBackup = null; toast.classList.remove('show'); }, 5000);
+        }
+
+        async function restoreLastDeletedAccount(event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            const backup = undoAccountBackup ? { ...undoAccountBackup } : null;
+            if (!backup) return;
+
+            clearTimeout(undoTimer);
+            clearTimeout(toastTimer);
+            const undoBtn = document.getElementById('web-toast-undo');
+            const toast = document.getElementById('web-toast');
+            undoAccountBackup = null;
+
+            if (undoBtn) {
+                undoBtn.disabled = true;
+                undoBtn.style.pointerEvents = 'auto';
+                undoBtn.textContent = 'Restoring…';
+                undoBtn.setAttribute('aria-busy', 'true');
+            }
+
+            try {
+                const res = await fetch('/api/account/restore', {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    cache:'no-store',
+                    body:JSON.stringify({account:backup})
+                });
+                const data = await res.json().catch(()=>({}));
+                if (!res.ok || data.status !== 'ok') {
+                    if (backup.uid) locallyDeletedUids.add(String(backup.uid));
+                    throw new Error(data.error || 'Could not restore account.');
+                }
+
+                if (data.uid) locallyDeletedUids.delete(String(data.uid));
+                if (backup.uid) locallyDeletedUids.delete(String(backup.uid));
+                showToast('Account restored successfully.', 'success');
+                await fetchStats();
+            } catch (e) {
+                if (backup.uid) locallyDeletedUids.add(String(backup.uid));
+                showToast(e.message || 'Restore request failed.', 'error');
+            } finally {
+                if (undoBtn) {
+                    undoBtn.disabled = false;
+                    undoBtn.style.pointerEvents = 'auto';
+                    undoBtn.textContent = 'Undo';
+                    undoBtn.removeAttribute('aria-busy');
+                }
+                if (toast) toast.classList.remove('undo-mode');
+            }
+        }
+
+        const undoButton = document.getElementById('web-toast-undo');
+        if (undoButton) {
+            undoButton.type = 'button';
+            undoButton.addEventListener('click', restoreLastDeletedAccount, true);
+        }
+
+        // Compact live-ratio toggle: hidden by default, opened only when requested.
+        document.addEventListener('click', event => {
+            const button = event.target.closest('.live-ratio-toggle');
+            if (!button) return;
+            const control = button.closest('.live-ratio-control');
+            const row = control?.querySelector('[data-field="exp_rate_row"]');
+            if (!row) return;
+            const willOpen = row.hidden;
+            row.hidden = !willOpen;
+            button.setAttribute('aria-expanded', String(willOpen));
+            button.title = willOpen ? 'Hide live EXP ratio' : 'Show live EXP ratio';
+        });
+
+        // Keep the live ratio animation running smoothly for open panels between API refreshes.
+        setInterval(() => {
+            document.querySelectorAll('.account-card').forEach(card => {
+                const row = card.querySelector('[data-field="exp_rate_row"]');
+                if (row && !row.hidden) {
+                    const rate = Number(card.dataset.expRate) || 0;
+                    setRatePulse(card, rate);
+                }
+            });
+        }, 140);
+
+        // Bot uptime is supplied by the server, not reset by every browser refresh.
+        setInterval(() => {
+            const sec = Math.max(0, Math.floor(serverUptime + (Date.now() - serverUptimeSyncedAt) / 1000));
+            const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+            const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+            const ss = String(sec % 60).padStart(2, '0');
+            const uptimeEl = document.getElementById('stat-uptime');
+            if (uptimeEl) uptimeEl.innerText = `${h}:${m}:${ss}`;
+        }, 1000);
+
+        // Live Poll every 5s. Calls are serialized so an older response can never
+        // overwrite a newer account state and recreate duplicate/stale cards.
+        fetchStats();
+        setInterval(fetchStats, 5000);
+
+</script>
+
+<style>
+
+.live-ratio-control{width:100%;margin:10px 0 3px}.live-ratio-toggle{width:100%;min-height:38px;padding:0 11px;border:1px solid rgba(255,255,255,.11);border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018));color:#e9edf1;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 5px 18px rgba(0,0,0,.12);font:600 10px/1 system-ui,-apple-system,Segoe UI,sans-serif;transition:background .22s ease,border-color .22s ease,box-shadow .22s ease,transform .22s ease}.live-ratio-toggle:hover{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.022));border-color:rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 22px rgba(0,0,0,.18)}.live-ratio-toggle:active{transform:translateY(1px)}.live-ratio-toggle:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:1px}.live-ratio-title{display:flex;align-items:center;gap:7px;flex:0 0 auto}.live-ratio-icon{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.9}.live-ratio-rate{min-width:66px;text-align:right;font-variant-numeric:tabular-nums;color:#dce2e7}.live-ratio-chevron{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .28s cubic-bezier(.22,1,.36,1)}.live-ratio-toggle[aria-expanded="true"] .live-ratio-chevron{transform:rotate(180deg)}.live-ratio-panel{width:100%;padding:9px 2px 3px;overflow:hidden;animation:liveRatioOpen .34s cubic-bezier(.22,1,.36,1)}.live-ratio-panel[hidden]{display:none}@keyframes liveRatioOpen{from{opacity:0;transform:translateY(-6px);max-height:0}to{opacity:1;transform:translateY(0);max-height:100px}}.live-ratio-chart-wrap{width:100%;height:64px;margin:0 auto;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012));box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}.live-ratio-chart{width:100%;height:64px;display:block;overflow:visible}.live-ratio-grid{stroke:rgba(255,255,255,.065);stroke-width:.7}.live-ratio-area{fill:url(#liveRatioAreaGradient);opacity:.75}.live-ratio-line{fill:none;stroke:url(#liveRatioGradient);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:url(#liveRatioGlow);stroke-dasharray:9 5;animation:liveRatioFlow .85s linear infinite;will-change:stroke-dashoffset}.live-ratio-dot{fill:#fff;stroke:rgba(255,255,255,.55);stroke-width:2;filter:url(#liveRatioGlow);animation:liveRatioDot 1.15s ease-in-out infinite}.live-ratio-scan{stroke:rgba(255,255,255,.5);stroke-width:1;stroke-dasharray:2 4;opacity:.5;animation:liveRatioScan 1.4s ease-in-out infinite}.live-ratio-level{position:absolute;left:9px;right:9px;bottom:5px;height:2px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}.live-ratio-level:after{content:"";display:block;width:var(--rate-level,0%);height:100%;border-radius:inherit;background:linear-gradient(90deg,rgba(255,255,255,.18),rgba(255,255,255,.72));box-shadow:0 0 8px rgba(255,255,255,.18);transition:width .6s ease}.live-ratio-live{position:absolute;top:6px;right:8px;display:flex;align-items:center;gap:5px;font:600 7px/1 system-ui,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.46)}.live-ratio-live i{width:5px;height:5px;border-radius:50%;background:#dfe7ec;box-shadow:0 0 7px rgba(255,255,255,.55);animation:liveRatioBlink 1.15s ease-in-out infinite}@keyframes liveRatioFlow{to{stroke-dashoffset:-28}}@keyframes liveRatioDot{0%,100%{r:3;opacity:.72}50%{r:5;opacity:1}}@keyframes liveRatioScan{0%,100%{opacity:.15}50%{opacity:.65}}@keyframes liveRatioBlink{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}@media(prefers-reduced-motion:reduce){.live-ratio-line,.live-ratio-dot,.live-ratio-scan,.live-ratio-live i{animation:none}}
+@media(max-width:480px){
+  body{padding:8px}
+  .account-card{padding:12px;border-radius:14px}
+  .exp-box{grid-template-columns:repeat(3,1fr);gap:5px;margin:9px 0}
+  .exp-item{padding:8px 7px;border-radius:8px}
+  .exp-label{font-size:7px}
+  .exp-val{font-size:9px}
+  .level-limit-row{gap:5px;flex-wrap:nowrap}
+  .limit-caption{font-size:8px}
+  .level-limit-input{width:48px;height:23px}
+  .exp-limit-input{width:58px;height:23px}
+  .exp-limit-row{gap:5px}
+  .exp-limit-state{font-size:8px}
+  .limit-set-btn{height:23px;padding:0 7px}
+  .acc-actions{margin-top:9px}
+  .acc-runtime [data-field="last_match"]{font-size:7px}
+  .task-runtime{font-size:10px}
+}
+</style>
+
+    <nav class="mobile-dock" aria-label="Quick actions">
+        <button type="button" class="dock-btn" id="dock-refresh-btn" onclick="dockRefresh(this)"><i class="fa-solid fa-rotate"></i> Refresh</button>
+        <button type="button" class="dock-btn primary" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> Add Account</button>
+    </nav>
+    <script>
+        async function dockRefresh(b){b.classList.add('loading');try{await manualRefresh();}finally{b.classList.remove('loading');}}
+    </script>
+</body>
+</html>
+<style>
+.acc-runtime{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.acc-runtime [data-field="last_match"]{font-size:8px;color:#666d75;line-height:1.15;white-space:nowrap}
+.task-runtime{font-size:11px;color:#7f8790;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+/* Buttons stay static for low-overhead mobile/desktop rendering. Other UI animations remain enabled. */
+.btn,.icon-btn,.limit-set-btn,.limit-action,.action-btns button{transition:none!important}
+.run-toggle-action i{transition:transform .18s ease,opacity .18s ease}
+.run-toggle-action.pause-action{color:#d7d7d7;border-color:rgba(255,255,255,.12)}
+.run-toggle-action.start-action{color:#8dffb8;border-color:rgba(141,255,184,.18)}
+.run-toggle-action:hover{transform:translateY(-1px)}
+.run-toggle-action.pause-action:hover{color:#fff;border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.065)}
+.run-toggle-action.start-action:hover{color:#b9ffd1;border-color:rgba(141,255,184,.32);background:rgba(141,255,184,.055)}
+.btn:before,.icon-btn::before,.icon-btn::after{display:none!important;content:none!important}
+.icon-btn.refreshing i{animation:none!important}
+</style>
+
+<style>
+/* Clean bulk-import controls: no button animation, compact on mobile. */
+.inline-helper{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;color:#666d75;font-size:9px}.inline-helper i{color:var(--accent-cyan);margin-right:4px}
+.mini-link-btn{border:0;background:none;color:#9da7b0;font:700 9px "Outfit",sans-serif;cursor:pointer;padding:2px 0}.mini-link-btn:hover{color:#fff}
+.bulk-mode-tabs{display:flex;gap:6px;margin-bottom:9px;padding:3px;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.018)}
+.bulk-tab{flex:1;border:0;border-radius:7px;background:transparent;color:#737b84;padding:8px 10px;font:700 9px "Outfit",sans-serif;cursor:pointer;transition:none!important;animation:none!important}.bulk-tab.active{background:rgba(255,255,255,.07);color:#fff}
+.compact-bulk-input{min-height:150px}
+.bulk-file-drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:150px;padding:20px;border:1px dashed rgba(255,255,255,.13);border-radius:12px;background:rgba(255,255,255,.012);text-align:center;color:#777;font-size:9px}.bulk-file-drop>i{font-size:21px;color:#9edfff}.bulk-file-drop strong{color:#dfe5e9;font-size:11px}.bulk-file-drop span{max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bulk-file-drop input,.bulk-file-row input{display:none}.file-pick-btn{margin-top:4px!important}
+.bulk-file-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:-2px 0 8px}.bulk-file-row span{font-size:9px;color:#666d75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+@media(max-width:650px){.inline-helper{font-size:8px}.bulk-mode-tabs{gap:4px}.bulk-tab{padding:7px 8px}.compact-bulk-input{min-height:125px}.bulk-file-drop{min-height:125px;padding:15px}}
+
+/* Refined mobile account layout */
+@media (max-width: 650px){
+  .acc-top{align-items:flex-start;gap:9px}
+  .acc-profile{min-width:0;flex:1}
+  .acc-info{min-width:0;max-width:calc(100vw - 115px)}
+  .acc-info h4{max-width:100%;font-size:13px}
+  .acc-info > span[data-field="uid"]{max-width:100%;font-size:8.5px;padding:3px 5px 3px 6px;gap:4px}
+  .uid-copy-btn{flex:0 0 17px}
+  .acc-status{flex:0 0 auto;font-size:8px;padding:5px 7px;max-width:110px}
+  .exp-box{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .exp-item{min-width:0}
+  .level-labels{gap:7px;font-size:8px}
+  .next-exp-hint{font-size:8px}
+  .level-limit-row,.exp-limit-row{width:100%;min-width:0}
+  .level-limit-row .limit-state,.exp-limit-row .exp-limit-state{overflow:hidden;text-overflow:ellipsis}
+  .live-ratio-control{margin-top:8px}
+  .acc-actions{align-items:flex-end;gap:8px}
+  .acc-runtime{min-width:0;flex:1}
+  .acc-runtime span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .action-btns{flex:0 0 auto;gap:6px}
+  .icon-btn{width:34px;height:34px;border-radius:10px}
+}
+@media (max-width: 420px){
+  body{padding:6px}
+  .account-card{padding:10px;border-radius:13px}
+  .acc-avatar{width:36px;height:36px;flex-basis:36px;border-radius:10px;font-size:13px}
+  .acc-info h4{font-size:12px}
+  .acc-status{font-size:7px;padding:4px 6px}
+  .exp-box{gap:4px;margin:8px 0}
+  .exp-item{padding:7px 5px}
+  .exp-label{font-size:6.5px}
+  .exp-val{font-size:8.5px}
+  .level-limit-row,.exp-limit-row{gap:4px}
+  .level-limit-input,.exp-limit-input{width:54px!important}
+  .limit-set-btn{padding:0 6px}
+  .acc-actions{margin-top:8px;padding-top:9px}
+}
+@media (max-width: 350px){
+  .acc-status{display:none}
+  .acc-info{max-width:calc(100vw - 65px)}
+  .action-btns{gap:4px}
+  .icon-btn{width:32px;height:32px}
+}
+@media (prefers-reduced-motion: reduce){
+  .uid-copy-btn,.account-card{transition:none!important;animation:none!important}
+}
+
+/* ===== Mobile premium + performance (final overrides) ===== */
+.mobile-dock{display:none}
+@media (max-width:768px){
+  html{-webkit-text-size-adjust:100%}
+  body{padding:12px 12px calc(96px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+  body:before{display:none}
+  /* Performance: blur + endless effects are the main lag source on phones */
+  header,.card-box,.stat-card,.account-card,.modal-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)!important}
+  header:before,.card-box:before,.stat-card:before,.account-card:before,.modal-card:before{animation:none!important;opacity:.22}
+  .progress-bar-bg:after,.progress-bar-fill:before,.logo-box:after,.exp-item:has(.exp-gained),.live-ratio-scan{animation:none!important}
+  .account-card{content-visibility:auto;contain-intrinsic-size:auto 460px}
+  header{position:sticky;top:8px;z-index:50;padding:12px 14px!important;border-radius:18px!important;align-items:center!important;background:rgba(10,10,10,.96)!important}
+  .header-actions{display:none!important}
+  .brand-text h1{font-size:16px!important}
+  .stats-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .stat-card{padding:14px!important;border-radius:16px!important}
+  .stat-content h3{font-size:18px!important;letter-spacing:-.2px}
+  .stat-content p{font-size:10.5px!important;letter-spacing:.3px}
+  .command-center{padding:16px!important;border-radius:18px!important;gap:14px!important}
+  .cc-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important;width:100%}
+  .cc-actions .cc-btn:first-child{grid-column:1/-1}
+  .cc-btn{justify-content:center;min-height:46px;padding:12px!important;font-size:13px!important}
+  .cc-btn:hover{transform:none}
+  .btn,.icon-btn,.limit-set-btn{min-height:42px}
+  .icon-btn{min-width:42px}
+  input,select,textarea{font-size:16px!important}
+  .modal-card,.cc-confirm-card{max-height:calc(100dvh - 24px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .mobile-dock{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:900;padding:8px;border-radius:20px;background:rgba(14,14,14,.97);border:1px solid var(--line-hi);box-shadow:0 18px 50px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+  .dock-btn{display:flex;align-items:center;justify-content:center;gap:9px;min-height:52px;border-radius:14px;font:700 14px Outfit,sans-serif;letter-spacing:.3px;cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--white);transition:transform .15s ease}
+  .dock-btn:active{transform:scale(.97)}
+  .dock-btn.primary{background:linear-gradient(135deg,#fff,#cfd8de);color:#050505;border-color:transparent;box-shadow:0 8px 24px rgba(255,255,255,.14)}
+  .dock-btn.loading i{animation:cc-spin .8s linear infinite}
+  .web-toast,#web-toast{bottom:calc(92px + env(safe-area-inset-bottom))!important}
+}
+@media (max-width:380px){.stats-grid{grid-template-columns:1fr 1fr!important}.stat-icon{width:34px!important;height:34px!important}.stat-content h3{font-size:16px!important}}
+</style>
+<style>
+
+/* Premium Add Account modal — mobile-first refinement */
+.add-account-card{width:min(540px,100%);padding:24px;border-radius:24px;border:1px solid rgba(255,255,255,.13);background:linear-gradient(155deg,#151515 0%,#090909 75%);}
+.add-account-card .modal-header{align-items:flex-start;gap:14px;padding-bottom:17px;margin-bottom:19px;border-bottom:1px solid rgba(255,255,255,.075)}
+.add-account-heading{min-width:0}.add-account-kicker{display:block;color:#9299a1;font:800 9px/1.2 "Outfit",sans-serif;letter-spacing:.18em;margin-bottom:7px}
+.add-account-heading h3{font-size:19px;line-height:1.25;letter-spacing:-.035em;color:#fff}
+.add-account-heading h3 i{color:#fff!important}.add-account-heading p{font-size:11px;line-height:1.5;color:#777f88;margin-top:6px}
+.add-account-card .modal-header>.icon-btn{flex:0 0 40px;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.10)}
+.add-account-card .form-group{margin-bottom:17px}.add-account-card .form-group label{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#aab0b7;margin-bottom:8px}
+.add-account-card .form-input{min-height:46px;padding:12px 14px;border-radius:12px;border-color:rgba(255,255,255,.11);background:#0b0b0b;color:#f7f7f7;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)}
+.add-account-card textarea.form-input{min-height:118px;line-height:1.6;resize:vertical}.add-account-card .form-input:focus{border-color:rgba(255,255,255,.34);box-shadow:0 0 0 3px rgba(255,255,255,.045)}
+.add-account-card select.form-input{appearance:none;padding-right:42px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23bfc5cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center}
+.add-account-card #guest-fields,.add-account-card #token-fields,.add-account-card #bulk-fields{padding:15px;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(255,255,255,.018);margin-top:4px}
+.add-account-card .bulk-mode-tabs{padding:4px;border-radius:12px;background:#090909;border-color:rgba(255,255,255,.08);margin-bottom:14px}
+.add-account-card .bulk-tab{min-height:38px;border-radius:9px;font-size:11px}.add-account-card .bulk-tab.active{background:#fff;color:#080808}
+.add-account-card .bulk-format-hint{font-size:10px;line-height:1.5;margin-top:10px}.add-account-card .bulk-format-hint span:last-child{color:#e5e5e5;font-weight:700}
+.add-account-card .bulk-file-drop{min-height:150px;border-radius:14px;border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.025)}
+.add-account-card .bulk-file-drop>i{color:#fff}.add-account-card .inline-helper{font-size:10px;gap:8px;flex-wrap:wrap}
+.add-account-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07)}
+.add-account-actions .btn{min-height:44px;padding:0 17px;border-radius:12px}
+@media(max-width:768px){
+  .add-account-overlay{align-items:flex-end!important;justify-content:center!important;padding:0!important;background:rgba(0,0,0,.78)!important}
+  .add-account-card{width:100%!important;max-width:none!important;max-height: min(91dvh,850px)!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:19px 16px calc(16px + env(safe-area-inset-bottom))!important;border-radius:24px 24px 0 0!important;border:1px solid rgba(255,255,255,.15)!important;border-bottom:0!important;background:linear-gradient(160deg,#171717 0%,#090909 70%)!important;box-shadow:0 -20px 60px rgba(0,0,0,.6)!important;animation:add-sheet-in .28s cubic-bezier(.22,1,.36,1)!important}
+  .add-account-card:before{display:none!important}.add-account-card .modal-header{position:sticky;top:-19px;z-index:5;margin:-19px -16px 17px!important;padding:18px 16px 14px!important;background:rgba(15,15,15,.97);border-bottom:1px solid rgba(255,255,255,.08);border-radius:24px 24px 0 0}
+  .add-account-heading h3{font-size:18px}.add-account-heading p{font-size:10px}.add-account-card .form-group{margin-bottom:14px}
+  .add-account-card .form-input{min-height:49px;border-radius:13px;padding:13px 12px}.add-account-card textarea.form-input{min-height:135px}
+  .add-account-card #guest-fields,.add-account-card #token-fields,.add-account-card #bulk-fields{padding:12px;border-radius:14px}
+  .add-account-actions{position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom));z-index:4;margin:18px -16px calc(-16px - env(safe-area-inset-bottom))!important;padding:12px 16px calc(14px + env(safe-area-inset-bottom))!important;background:rgba(10,10,10,.98);box-shadow:0 -10px 25px rgba(0,0,0,.28);justify-content:stretch;gap:9px}
+  .add-account-actions .btn{flex:1;min-height:48px;border-radius:13px;font-size:13px!important}
+  .add-account-card .bulk-mode-tabs{gap:6px}.add-account-card .bulk-tab{min-height:42px;font-size:12px}
+  .add-account-card .bulk-file-drop{min-height:140px;padding:16px}.add-account-card .bulk-format-hint{gap:7px;font-size:9px}
+}
+@media(max-width:380px){.add-account-card{padding-left:12px!important;padding-right:12px!important}.add-account-card .modal-header{margin-left:-12px!important;margin-right:-12px!important;padding-left:12px!important;padding-right:12px!important}.add-account-card #guest-fields,.add-account-card #token-fields,.add-account-card #bulk-fields{padding:10px}.add-account-actions{margin-left:-12px!important;margin-right:-12px!important;padding-left:12px!important;padding-right:12px!important}.add-account-actions .btn{padding:0 10px;font-size:12px!important}}
+@keyframes add-sheet-in{from{opacity:.65;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.add-account-card{animation:none!important}}
+
+
+/* One-shot limits — polished responsive layout */
+#global-limits-modal{
+  padding:clamp(12px,3vw,24px);
+  padding-bottom:max(12px,env(safe-area-inset-bottom));
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+#global-limits-modal.active{display:flex}
+#global-limits-modal .cc-confirm-card{
+  width:min(100%,520px);
+  max-height:calc(100dvh - 32px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:clamp(18px,4vw,28px);
+  border-radius:22px;
+  border-color:rgba(190,160,255,.24);
+  background:
+    radial-gradient(circle at 100% 0,rgba(172,132,255,.10),transparent 38%),
+    linear-gradient(145deg,rgba(20,20,23,.99),rgba(8,8,10,.99));
+  box-shadow:0 24px 80px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.055);
+}
+#global-limits-modal #global-limits-title{
+  gap:11px;
+  font-size:clamp(17px,4vw,20px);
+  line-height:1.25;
+}
+#global-limits-modal #global-limits-title i{
+  width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;
+  border-radius:12px;color:#d5c1ff!important;
+  background:rgba(190,160,255,.12);border:1px solid rgba(190,160,255,.2);
+}
+#global-limits-modal .cc-confirm-card>p{
+  margin:12px 0 18px;
+  max-width:48ch;
+  font-size:12px;line-height:1.65;color:#a5a5ad;
+}
+#global-limits-modal .global-limits-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:0;
+}
+#global-limits-modal .global-limit-field{
+  min-width:0;padding:13px;border-radius:15px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.025);
+}
+#global-limits-modal .global-limit-field label{
+  display:flex;align-items:center;gap:7px;margin:0 0 9px;
+  color:#c7c7ce;font-size:11px;font-weight:650;line-height:1.35;
+}
+#global-limits-modal .global-limit-field label::before{
+  content:"";width:6px;height:6px;flex:0 0 6px;border-radius:50%;
+  background:#c6a6ff;box-shadow:0 0 10px rgba(198,166,255,.45);
+}
+#global-limits-modal .global-limit-field input{
+  display:block;width:100%;min-width:0;height:47px;padding:0 12px;
+  border-radius:11px;border:1px solid rgba(255,255,255,.11);
+  background:#0a0a0c;color:#f5f5f7;font:600 14px "JetBrains Mono",monospace;
+  outline:none;appearance:textfield;-moz-appearance:textfield;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+#global-limits-modal .global-limit-field input::-webkit-inner-spin-button,
+#global-limits-modal .global-limit-field input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#global-limits-modal .global-limit-field input::placeholder{color:#686871;font-weight:500}
+#global-limits-modal .global-limit-field input:focus{
+  border-color:rgba(198,166,255,.72);background:#0e0d12;
+  box-shadow:0 0 0 3px rgba(190,160,255,.10);
+}
+#global-limits-modal .global-limit-note{
+  display:flex;align-items:flex-start;gap:9px;margin-top:14px;padding:11px 12px;
+  border:1px solid rgba(255,255,255,.07);border-radius:12px;
+  background:rgba(255,255,255,.025);font-size:11px;line-height:1.55;color:#92929c;
+  overflow-wrap:anywhere;
+}
+#global-limits-modal .global-limit-note::before{
+  content:"i";display:grid;place-items:center;flex:0 0 17px;width:17px;height:17px;
+  margin-top:1px;border:1px solid rgba(198,166,255,.38);border-radius:50%;
+  color:#d5c1ff;font:700 10px/1 sans-serif;
+}
+#global-limits-modal .cc-confirm-row{
+  display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+  gap:10px;margin-top:17px;
+}
+#global-limits-modal .cc-confirm-row .btn{
+  min-width:0;min-height:44px;padding:11px 12px;border-radius:12px;
+  white-space:normal;font-size:12px;
+}
+#global-limits-modal #global-limits-apply{box-shadow:0 7px 24px rgba(190,160,255,.12)}
+#global-limits-modal #global-limits-apply.loading i{animation:cc-spin .8s linear infinite}
+#global-limits-modal .cc-confirm-row .btn:focus-visible{outline:2px solid #c6a6ff;outline-offset:3px}
+@media(max-width:520px){
+  #global-limits-modal{align-items:flex-end;padding:8px 8px max(8px,env(safe-area-inset-bottom))}
+  #global-limits-modal .cc-confirm-card{
+    width:100%;max-width:none;max-height:min(88dvh,760px);
+    padding:19px 16px max(16px,env(safe-area-inset-bottom));
+    border-radius:22px 22px 16px 16px;
+    animation:limits-sheet-in .28s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes limits-sheet-in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+  #global-limits-modal .global-limits-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  #global-limits-modal .global-limit-field{padding:11px 12px}
+  #global-limits-modal .global-limit-field input{height:45px;font-size:16px}
+  #global-limits-modal .cc-confirm-row{position:sticky;bottom:-1px;padding-top:10px;margin-top:13px;background:linear-gradient(180deg,rgba(8,8,10,0),rgba(8,8,10,.98) 24%)}
+}
+@media(prefers-reduced-motion:reduce){
+  #global-limits-modal .cc-confirm-card{animation:none!important}
+}
+
+
+body.modal-open{overflow:hidden;touch-action:none}
+</style>
