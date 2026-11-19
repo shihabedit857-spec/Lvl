@@ -1,7 +1,6 @@
-httpx>=0.27.0
-google-play-scraper>=1.2.7
-pycryptodome>=3.20.0
-protobuf-decoder>=0.1.0
-protobuf>=5.27.0
+flask>=3.0.0
 requests>=2.31.0
-aiohttp>=3.9.0
+pycryptodome>=3.20.0
+urllib3>=2.2.0
+gunicorn>=21.2.0
+psycopg2-binary>=2.9.9
